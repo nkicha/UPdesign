@@ -47,6 +47,18 @@
       "description": "Atelier de fabrication d'enseignes avec outils de haute précision",
       "imageUrl": "https://picsum.photos/seed/up-workshop/1200/800",
       "imageHint": "sign manufacturing workshop"
+    },
+    {
+      "id": "design-phase",
+      "description": "Graphiste travaillant sur une maquette d'enseigne numérique",
+      "imageUrl": "https://picsum.photos/seed/up-design/800/600",
+      "imageHint": "graphic design workstation"
+    },
+    {
+      "id": "install-phase",
+      "description": "Équipe technique installant une enseigne lumineuse en hauteur",
+      "imageUrl": "https://picsum.photos/seed/up-install/800/600",
+      "imageHint": "sign installation crew"
     }
   ]
 }

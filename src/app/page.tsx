@@ -2,8 +2,10 @@
 import { Navigation } from "@/components/sections/Navigation";
 import { Hero } from "@/components/sections/Hero";
 import { Services } from "@/components/sections/Services";
+import { Process } from "@/components/sections/Process";
 import { Gallery } from "@/components/sections/Gallery";
 import { QuoteForm } from "@/components/sections/QuoteForm";
+import { FAQ } from "@/components/sections/FAQ";
 import { About } from "@/components/sections/About";
 import { Contact } from "@/components/sections/Contact";
 import { Toaster } from "@/components/ui/toaster";
@@ -15,7 +17,9 @@ export default function Home() {
       <main>
         <Hero />
         <Services />
+        <Process />
         <Gallery />
+        <FAQ />
         <QuoteForm />
         <About />
         <Contact />
