@@ -1,3 +1,52 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "hero-bg",
+      "description": "Vue d'ensemble d'une enseigne lumineuse moderne sur une façade urbaine",
+      "imageUrl": "https://picsum.photos/seed/up-hero/1920/1080",
+      "imageHint": "modern sign lighting"
+    },
+    {
+      "id": "neon-sign",
+      "description": "Enseigne au néon rouge vintage style artistique",
+      "imageUrl": "https://picsum.photos/seed/up-neon/800/600",
+      "imageHint": "neon sign"
+    },
+    {
+      "id": "built-up-letters",
+      "description": "Lettres boitiers rétroéclairées en acier inoxydable",
+      "imageUrl": "https://picsum.photos/seed/up-letters/800/600",
+      "imageHint": "3d letters sign"
+    },
+    {
+      "id": "car-wrap",
+      "description": "Habillage de véhicule professionnel avec logo UP Design",
+      "imageUrl": "https://picsum.photos/seed/up-car/800/600",
+      "imageHint": "car wrap design"
+    },
+    {
+      "id": "vintage-light",
+      "description": "Enseigne style cinéma vintage avec ampoules apparentes",
+      "imageUrl": "https://picsum.photos/seed/up-vintage/800/600",
+      "imageHint": "vintage marquee sign"
+    },
+    {
+      "id": "lightbox",
+      "description": "Caisson lumineux moderne pour une boutique de luxe",
+      "imageUrl": "https://picsum.photos/seed/up-box/800/600",
+      "imageHint": "lightbox sign"
+    },
+    {
+      "id": "halo-sign",
+      "description": "Enseigne avec effet halo lumineux doux sur mur texturé",
+      "imageUrl": "https://picsum.photos/seed/up-halo/800/600",
+      "imageHint": "halo lighting sign"
+    },
+    {
+      "id": "workshop",
+      "description": "Atelier de fabrication d'enseignes avec outils de haute précision",
+      "imageUrl": "https://picsum.photos/seed/up-workshop/1200/800",
+      "imageHint": "sign manufacturing workshop"
+    }
+  ]
 }
