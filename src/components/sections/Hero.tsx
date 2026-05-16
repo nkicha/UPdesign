@@ -43,8 +43,8 @@ export function Hero() {
               <Link href="#realisations">Voir nos travaux</Link>
             </Button>
             <Button size="lg" variant="outline" className="border-accent text-accent hover:bg-accent/10 text-lg font-bold h-14 px-8" asChild>
-              <Link href="#conception-ia" className="flex items-center gap-2">
-                Outil de Conception IA <ArrowRight className="h-5 w-5" />
+              <Link href="#devis" className="flex items-center gap-2">
+                Demander un Devis <ArrowRight className="h-5 w-5" />
               </Link>
             </Button>
           </div>

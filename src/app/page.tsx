@@ -3,7 +3,6 @@ import { Navigation } from "@/components/sections/Navigation";
 import { Hero } from "@/components/sections/Hero";
 import { Services } from "@/components/sections/Services";
 import { Gallery } from "@/components/sections/Gallery";
-import { AITool } from "@/components/sections/AITool";
 import { QuoteForm } from "@/components/sections/QuoteForm";
 import { About } from "@/components/sections/About";
 import { Contact } from "@/components/sections/Contact";
@@ -17,7 +16,6 @@ export default function Home() {
         <Hero />
         <Services />
         <Gallery />
-        <AITool />
         <QuoteForm />
         <About />
         <Contact />
