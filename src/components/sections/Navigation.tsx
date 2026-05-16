@@ -3,10 +3,20 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { cn } from "@/lib/utils";
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const navLinks = [
     { href: "#services", label: "Services" },
@@ -17,14 +27,17 @@ export function Navigation() {
   ];
 
   return (
-    <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-border">
+    <nav className={cn(
+      "fixed top-0 w-full z-50 transition-all duration-300",
+      scrolled ? "bg-background/95 backdrop-blur-md border-b border-border py-2" : "bg-transparent py-4"
+    )}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
+        <div className="flex justify-between items-center h-16 md:h-20">
           <Link href="/" className="flex items-center space-x-2 group">
-            <div className="bg-primary px-3 py-1 rounded font-black text-2xl tracking-tighter text-white shadow-[0_0_15px_rgba(230,26,61,0.4)] group-hover:shadow-[0_0_25px_rgba(230,26,61,0.6)] transition-all">
+            <div className="bg-primary px-2 py-0.5 md:px-3 md:py-1 rounded font-black text-xl md:text-2xl tracking-tighter text-white shadow-[0_0_15px_rgba(230,26,61,0.4)] transition-all">
               UP
             </div>
-            <span className="font-headline font-bold text-xl tracking-tight hidden sm:block">
+            <span className="font-headline font-bold text-lg md:text-xl tracking-tight">
               Design <span className="text-accent">Éclat</span>
             </span>
           </Link>
@@ -50,7 +63,8 @@ export function Navigation() {
           <div className="md:hidden">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="text-muted-foreground hover:text-white"
+              className="p-2 text-muted-foreground hover:text-white transition-colors"
+              aria-label="Toggle menu"
             >
               {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
@@ -58,27 +72,29 @@ export function Navigation() {
         </div>
       </div>
 
-      {isOpen && (
-        <div className="md:hidden bg-background border-b border-border animate-in slide-in-from-top duration-300">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="block px-3 py-2 text-base font-medium text-muted-foreground hover:text-primary"
-                onClick={() => setIsOpen(false)}
-              >
-                {link.label}
-              </Link>
-            ))}
-            <div className="px-3 py-4">
-               <Button asChild className="w-full bg-primary font-bold">
-                 <Link href="#devis" onClick={() => setIsOpen(false)}>Demander un Devis</Link>
-               </Button>
-            </div>
+      {/* Mobile Menu */}
+      <div className={cn(
+        "md:hidden fixed inset-x-0 bg-background border-b border-border transition-all duration-300 ease-in-out overflow-hidden",
+        isOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0 pointer-events-none"
+      )}>
+        <div className="px-4 pt-2 pb-6 space-y-1">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="block px-3 py-4 text-lg font-medium text-muted-foreground hover:text-primary border-b border-white/5"
+              onClick={() => setIsOpen(false)}
+            >
+              {link.label}
+            </Link>
+          ))}
+          <div className="pt-6">
+             <Button asChild className="w-full bg-primary font-bold py-6 text-lg">
+               <Link href="#devis" onClick={() => setIsOpen(false)}>Demander un Devis</Link>
+             </Button>
           </div>
         </div>
-      )}
+      </div>
     </nav>
   );
 }
