@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -33,8 +34,14 @@ export function Bar() {
     )}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 md:h-20">
-          <Link href="/" className="flex items-center space-x-2 group">
-            {/* icon  */}
+          <Link href="/" className="flex items-center group">
+            <Image
+              src="/logo_red.png"
+              alt="UP Design"
+              width={200}
+              height={200}
+              className="h-auto w-[80px] md:w-[100px] transition-opacity duration-300 group-hover:opacity-80"
+            />
           </Link>
 
           <div className="hidden md:flex space-x-8">
@@ -50,9 +57,9 @@ export function Bar() {
           </div>
 
           <div className="hidden md:block">
-            <Button asChild variant="default" className="bg-primary hover:bg-primary/90 font-bold">
+            {/* <Button asChild variant="default" className="bg-primary hover:bg-primary/90 font-bold">
               <Link href="#devis">Projet Gratuit</Link>
-            </Button>
+            </Button> */}
           </div>
 
           <div className="md:hidden">
@@ -84,9 +91,9 @@ export function Bar() {
             </Link>
           ))}
           <div className="pt-6">
-             <Button asChild className="w-full bg-primary font-bold py-6 text-lg">
-               <Link href="#devis" onClick={() => setIsOpen(false)}>Demander un Devis</Link>
-             </Button>
+            <Button asChild className="w-full bg-primary font-bold py-6 text-lg">
+              <Link href="#devis" onClick={() => setIsOpen(false)}>Demander un Devis</Link>
+            </Button>
           </div>
         </div>
       </div>

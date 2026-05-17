@@ -15,8 +15,8 @@ const works = [
 ];
 
 export function Gallery() {
-  return (  
-    <section id="realisations" className="py-16 md:py-24">
+  return (
+    <section id="portfolio" className="py-16 md:py-24">
       <div className="container mx-auto px-4">
         <div className="flex flex-col lg:flex-row justify-center lg:items-center mb-12 md:mb-16 gap-6">
           <div className="max-w-2xl text-center">
