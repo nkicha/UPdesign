@@ -24,18 +24,18 @@ export function Hero() {
         <div className="absolute inset-0 bg-gradient-to-r from-background via-transparent to-transparent hidden md:block" />
       </div>
 
-      <div className="z-10 flex flex-col items-center animate-in fade-in slide-in-from-top duration-700">
+      <div className="absolute left-4 md:left-12 top-1/2 -translate-y-1/2 z-10 flex flex-col items-center animate-in fade-in slide-in-from-left duration-700">
         <Image
-          src="/images/icon.png"
+          src="/logo_white.png"
           alt="UP Design Logo"
-          width={120}
-          height={120}
-          className="mb-8"
+          width={500}
+          height={480}
+          className="h-auto w-[180px] md:w-[360px]"
         />
       </div>
 
-      <div className="container mx-auto px-4 z-10">
-        <div className="flex flex-col sm:flex-row gap-4 justify-center animate-in fade-in slide-in-from-bottom duration-700 delay-300">
+      <div className="container mx-0 px-0 z-10 mt-auto w-full">
+        <div className="flex flex-col sm:flex-row gap-4 justify-start">
           <Button size="lg" className="bg-primary hover:bg-primary/90 text-lg font-bold h-14 px-8 w-full sm:w-auto" asChild>
             <Link href="#realisations">Nos Travaux</Link>
           </Button>
