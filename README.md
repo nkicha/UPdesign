@@ -1,6 +1,6 @@
 ## Run the Project
 
-USE THIS COMMAND TO RUN THE PROJECT LOCALLY:
+HAHOWA L COMMANED BACH TKHDAM L PROJET
 
 ```bash
 npm run dev
