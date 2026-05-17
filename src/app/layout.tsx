@@ -1,9 +1,10 @@
 
 import type {Metadata} from 'next';
+// @ts-expect-error
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'UP Design Éclat | Enseignes & Design Lumineux',
+  title: 'ULTRA PUB Design',
   description: 'Fabricant d\'enseignes sur mesure : néons, lettres 3D, habillage véhicules et design vintage pour entreprises.',
 };
 

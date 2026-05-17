@@ -1,9 +1,9 @@
-import { Navigation } from "@/components/sections/Navigation";
+import { Bar } from "@/components/sections/Bar";
 import { Hero } from "@/components/sections/Hero";
 import { Services } from "@/components/sections/Services";
 import { Process } from "@/components/sections/Process";
 import { Gallery } from "@/components/sections/Gallery";
-import { QuoteForm } from "@/components/sections/QuoteForm";
+import { Devis } from "@/components/sections/Devis";
 import { FAQ } from "@/components/sections/FAQ";
 import { About } from "@/components/sections/About";
 import { Contact } from "@/components/sections/Contact";
@@ -12,14 +12,14 @@ import { Toaster } from "@/components/ui/toaster";
 export default function Home() {
   return (
     <div className="min-h-screen bg-background selection:bg-primary selection:text-white">
-      <Navigation />
+      <Bar />
       <main>
         <Hero />
-        <Services />
+        {/* <Services /> */}
         <Process />
         <Gallery />
         <FAQ />
-        <QuoteForm />
+        <Devis />
         <About />
         <Contact />
       </main>

@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { Send, UploadCloud } from "lucide-react";
 
-export function QuoteForm() {
+export function Devis() {
   const { toast } = useToast();
 
   const handleQuoteSubmit = (e: React.FormEvent<HTMLFormElement>) => {

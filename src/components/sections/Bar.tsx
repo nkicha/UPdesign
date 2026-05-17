@@ -6,7 +6,7 @@ import { Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
-export function Navigation() {
+export function Bar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -34,12 +34,7 @@ export function Navigation() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 md:h-20">
           <Link href="/" className="flex items-center space-x-2 group">
-            <div className="bg-primary px-2 py-0.5 md:px-3 md:py-1 rounded font-black text-xl md:text-2xl tracking-tighter text-white shadow-[0_0_15px_rgba(230,26,61,0.4)] transition-all">
-              UP
-            </div>
-            <span className="font-headline font-bold text-lg md:text-xl tracking-tight">
-              Design <span className="text-accent">Éclat</span>
-            </span>
+            {/* icon  */}
           </Link>
 
           <div className="hidden md:flex space-x-8">

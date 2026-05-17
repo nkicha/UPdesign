@@ -1,4 +1,4 @@
-# **App Name**: UP Design Éclat
+# **App Name**: UPDesign
 
 ## Core Features:
 

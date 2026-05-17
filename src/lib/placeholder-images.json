@@ -3,61 +3,61 @@
     {
       "id": "hero-bg",
       "description": "Vue d'ensemble d'une enseigne lumineuse moderne sur une façade urbaine",
-      "imageUrl": "https://picsum.photos/seed/up-hero/1920/1080",
+      "imageUrl": "/images/hero-bg.png",
       "imageHint": "modern sign lighting"
     },
     {
       "id": "neon-sign",
       "description": "Enseigne au néon rouge vintage style artistique",
-      "imageUrl": "https://picsum.photos/seed/up-neon/800/600",
+      "imageUrl": "/images/neon-sign.jpg",
       "imageHint": "neon sign"
     },
     {
       "id": "built-up-letters",
       "description": "Lettres boitiers rétroéclairées en acier inoxydable",
-      "imageUrl": "https://picsum.photos/seed/up-letters/800/600",
+      "imageUrl": "/images/built-up-letters.jpg",
       "imageHint": "3d letters sign"
     },
     {
       "id": "car-wrap",
       "description": "Habillage de véhicule professionnel avec logo UP Design",
-      "imageUrl": "https://picsum.photos/seed/up-car/800/600",
+      "imageUrl": "/images/car-wrap.jpg",
       "imageHint": "car wrap design"
     },
     {
       "id": "vintage-light",
       "description": "Enseigne style cinéma vintage avec ampoules apparentes",
-      "imageUrl": "https://picsum.photos/seed/up-vintage/800/600",
+      "imageUrl": "/images/vintage-light.jpg",
       "imageHint": "vintage marquee sign"
     },
     {
       "id": "lightbox",
       "description": "Caisson lumineux moderne pour une boutique de luxe",
-      "imageUrl": "https://picsum.photos/seed/up-box/800/600",
+      "imageUrl": "/images/lightbox.jpg",
       "imageHint": "lightbox sign"
     },
     {
       "id": "halo-sign",
       "description": "Enseigne avec effet halo lumineux doux sur mur texturé",
-      "imageUrl": "https://picsum.photos/seed/up-halo/800/600",
+      "imageUrl": "/images/halo-sign.jpg",
       "imageHint": "halo lighting sign"
     },
     {
       "id": "workshop",
       "description": "Atelier de fabrication d'enseignes avec outils de haute précision",
-      "imageUrl": "https://picsum.photos/seed/up-workshop/1200/800",
+      "imageUrl": "/images/workshop.jpg",
       "imageHint": "sign manufacturing workshop"
     },
     {
       "id": "design-phase",
       "description": "Graphiste travaillant sur une maquette d'enseigne numérique",
-      "imageUrl": "https://picsum.photos/seed/up-design/800/600",
+      "imageUrl": "/images/design-phase.jpg",
       "imageHint": "graphic design workstation"
     },
     {
       "id": "install-phase",
       "description": "Équipe technique installant une enseigne lumineuse en hauteur",
-      "imageUrl": "https://picsum.photos/seed/up-install/800/600",
+      "imageUrl": "/images/install-phase.jpg",
       "imageHint": "sign installation crew"
     }
   ]
