@@ -19,8 +19,8 @@ export function Bar() {
   }, []);
 
   const navLinks = [
-    { href: "#services", label: "Services" },
-    { href: "#realisations", label: "Réalisations" },
+    // { href: "#services", label: "Services" },
+    { href: "#portfolio", label: "Portfolio" },
     { href: "#devis", label: "Devis" },
     { href: "#a-propos", label: "À Propos" },
     { href: "#contact", label: "Contact" },
