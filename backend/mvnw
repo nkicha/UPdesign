@@ -1,0 +1,57 @@
+#!/bin/sh
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+if [ -z "$MAVEN_PROJECTBASEDIR" ]; then
+  FIND_MAVEN_BASEDIR=true
+  MAVEN_PROJECTBASEDIR=`pwd`
+fi
+
+if [ "$MAVEN_PROJECTBASEDIR" = "" ]; then
+  echo "The MAVEN_PROJECTBASEDIR environment variable is not set and \
+    "pwd" failed. Stop >&2"
+  exit 1
+fi
+
+MAVEN_PROJECTBASEDIR=`cd "$MAVEN_PROJECTBASEDIR"; pwd`
+
+MAVEN_WRAPPER_PROPERTIES=`find "$MAVEN_PROJECTBASEDIR" -name ".mvn/wrapper/maven-wrapper.properties"`
+
+if [ -f "$MAVEN_WRAPPER_PROPERTIES" ]; then
+  . "$MAVEN_WRAPPER_PROPERTIES"
+fi
+
+MAVEN_URL="https://repo1.maven.org/maven2/org/apache/maven/apache-maven/3.9.6/apache-maven-3.9.6-bin.tar.gz"
+if [ "$MAVEN_VERSION" != "" ]; then
+  MAVEN_URL="https://repo1.maven.org/maven2/org/apache/maven/apache-maven/${MAVEN_VERSION}/apache-maven-${MAVEN_VERSION}-bin.tar.gz"
+fi
+
+MAVEN_HOME="$MAVEN_PROJECTBASEDIR/.mvn/maven"
+mkdir -p "$MAVEN_HOME"
+
+if [ ! -d "$MAVEN_HOME/bin" ]; then
+  echo "Downloading Maven 3.9.6..."
+  if command -v wget > /dev/null; then
+    wget -q "$MAVEN_URL" -O /tmp/maven.tar.gz
+  elif command -v curl > /dev/null; then
+    curl -s -L "$MAVEN_URL" -o /tmp/maven.tar.gz
+  fi
+  tar xzf /tmp/maven.tar.gz -C "$MAVEN_HOME" --strip-components=1
+  rm /tmp/maven.tar.gz
+fi
+
+exec "$MAVEN_HOME/bin/mvn" "$@"

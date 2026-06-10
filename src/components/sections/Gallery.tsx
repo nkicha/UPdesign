@@ -6,12 +6,12 @@ import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
 
 const works = [
-  { id: "neon-sign", category: "Néon", title: "Néon Rouge Loft" },
-  { id: "built-up-letters", category: "Lettres 3D", title: "Siège Social Tech" },
-  { id: "car-wrap", category: "Véhicules", title: "Flotte Commerciale" },
-  { id: "vintage-light", category: "Vintage", title: "Cinéma Le Grand" },
-  { id: "lightbox", category: "Caissons", title: "Boutique Prestige" },
-  { id: "halo-sign", category: "Lettres 3D", title: "Hôtel Lumina" },
+  { id: "creation-prymiro-facade", category: "Storefront Signage", title: "Enseigne Lumineuse Prymiro" },
+  { id: "creation-letter-b", category: "3D Letters", title: "Lettre Boîtier Or & LED" },
+  { id: "creation-neon-nails", category: "Neon Sign", title: "Néon Décoratif Nails" },
+  { id: "creation-auto-ecole", category: "Lightbox Sign", title: "Caisson Lumineux Auto École El Maaqoul" },
+  { id: "creation-prymiro-logo", category: "Lightbox Sign", title: "Logo Rétroéclairé Prymiro" },
+  { id: "creation-coiffure-style", category: "Lightbox Sign", title: "Caisson Lumineux Coiffure Style" },
 ];
 
 export function Gallery() {

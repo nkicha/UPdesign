@@ -46,3 +46,16 @@ firestore-debug.log
 
 .agents
 .vscode
+
+# Maven
+backend/target/
+backend/.mvn/maven/
+backend/.mvn/wrapper/
+backend/*.jar
+backend/*.war
+backend/*.ear
+backend/*.zip
+backend/*.tar.gz
+backend/*.rar
+backend/log/
+backend/*.log

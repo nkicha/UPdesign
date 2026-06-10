@@ -7,40 +7,46 @@
       "imageHint": "modern sign lighting"
     },
     {
-      "id": "neon-sign",
-      "description": "Enseigne au néon rouge vintage style artistique",
-      "imageUrl": "/images/neon-sign.jpg",
-      "imageHint": "neon sign"
+      "id": "rjilat",
+      "description": "Photo d'équipe ou ambiance de création 'rjilat' pour la phase de design",
+      "imageUrl": "/images/rjilat.jpeg",
+      "imageHint": "rjilat team design"
     },
     {
-      "id": "built-up-letters",
-      "description": "Lettres boitiers rétroéclairées en acier inoxydable",
-      "imageUrl": "/images/built-up-letters.jpg",
-      "imageHint": "3d letters sign"
+      "id": "creation-prymiro-facade",
+      "description": "Conception et installation d'une enseigne lumineuse LED jaune dorée pour la boutique de mode Prymiro, avec habillage de façade en composite noir brillant.",
+      "imageUrl": "/images/creation-1.jpg",
+      "imageHint": "storefront signage prymiro"
     },
     {
-      "id": "car-wrap",
-      "description": "Habillage de véhicule professionnel avec logo UP Design",
-      "imageUrl": "/images/car-wrap.jpg",
-      "imageHint": "car wrap design"
+      "id": "creation-letter-b",
+      "description": "Fabrication sur mesure d'une lettre 3D en finition or miroir avec motif perforé et éclairage LED intégré pour un effet scintillant unique.",
+      "imageUrl": "/images/creation-2.jpg",
+      "imageHint": "3d letter b sign"
     },
     {
-      "id": "vintage-light",
-      "description": "Enseigne style cinéma vintage avec ampoules apparentes",
-      "imageUrl": "/images/vintage-light.jpg",
-      "imageHint": "vintage marquee sign"
+      "id": "creation-neon-nails",
+      "description": "Enseigne en néon LED flexible rose fuchsia montée sur un support acrylique transparent, installée sur un mur végétal intérieur.",
+      "imageUrl": "/images/creation-3.jpg",
+      "imageHint": "neon nails sign"
     },
     {
-      "id": "lightbox",
-      "description": "Caisson lumineux moderne pour une boutique de luxe",
-      "imageUrl": "/images/lightbox.jpg",
-      "imageHint": "lightbox sign"
+      "id": "creation-auto-ecole",
+      "description": "Fabrication en atelier d'un caisson lumineux panoramique pour Auto École El Maaqoul, avec lettres rétroéclairées blanches sur fond noir et logo circulaire central sérigraphié.",
+      "imageUrl": "/images/creation-auto-ecole.jpg",
+      "imageHint": "auto ecole lightbox sign workshop"
     },
     {
-      "id": "halo-sign",
-      "description": "Enseigne avec effet halo lumineux doux sur mur texturé",
-      "imageUrl": "/images/halo-sign.jpg",
-      "imageHint": "halo lighting sign"
+      "id": "creation-prymiro-logo",
+      "description": "Logo circulaire personnalisé rétroéclairé en jaune vif, suspendu en saillie sur la façade pour une visibilité nocturne maximale.",
+      "imageUrl": "/images/creation-5.jpg",
+      "imageHint": "retro backlit round logo prymiro"
+    },
+    {
+      "id": "creation-coiffure-style",
+      "description": "Conception d'une enseigne lumineuse double-face pour un salon de coiffure/barbier, associant des lettres rétroéclairées jaunes et un caisson lumineux circulaire.",
+      "imageUrl": "/images/creation-6.jpg",
+      "imageHint": "luminous barbershop sign coiffure style"
     },
     {
       "id": "workshop",

@@ -10,13 +10,13 @@ export function Hero() {
           autoPlay
           loop
           muted
-          className="absolute inset-0 w-full h-full object-cover opacity-25 md:opacity-35"
+          className="absolute inset-0 w-full h-full object-cover opacity-75 md:opacity-85 dark:opacity-25 md:dark:opacity-35 transition-opacity duration-300"
           playsInline
         >
           <source src="/hero_banner.mp4" type="video/mp4" />
         </video>
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 md:via-background/50 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-background/40 via-transparent to-transparent hidden md:block" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent dark:from-background dark:via-background/70 md:dark:via-background/50 transition-colors duration-300" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background/20 dark:from-background/40 via-transparent to-transparent hidden md:block transition-colors duration-300" />
       </div>
 
       {/* Bottom CTA Buttons — flush to the very bottom */}
@@ -33,7 +33,7 @@ export function Hero() {
         {/* Secondary */}
         <Link
           href="#devis"
-          className="flex-1 w-full sm:w-auto flex items-center justify-center gap-2 h-14 px-8 rounded-full border border-white/30 bg-white/5 backdrop-blur-sm text-white font-semibold text-base tracking-wide"
+          className="flex-1 w-full sm:w-auto flex items-center justify-center gap-2 h-14 px-8 rounded-full border border-border dark:border-white/30 bg-secondary dark:bg-white/5 hover:bg-secondary/80 dark:hover:bg-white/10 backdrop-blur-sm text-foreground dark:text-white font-semibold text-base tracking-wide transition-all duration-300"
         >
           Devis Gratuit
           <ArrowRight className="h-4 w-4" />

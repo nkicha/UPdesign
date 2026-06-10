@@ -10,25 +10,25 @@ const steps = [
     icon: <Search className="h-6 w-6" />,
     title: "Conseil & Étude",
     description: "Analyse de votre façade, de votre environnement et de votre charte graphique pour une solution optimale.",
-    image: "workshop"
+    image: "hero-bg"
   },
   {
     icon: <PenTool className="h-6 w-6" />,
     title: "Design & Maquette",
     description: "Création de visuels 2D et 3D pour vous projeter. Ajustements jusqu'à validation finale.",
-    image: "design-phase"
+    image: "/images/design-maquette.jpg"
   },
   {
     icon: <Factory className="h-6 w-6" />,
     title: "Fabrication",
     description: "Réalisation artisanale et technologique dans notre atelier parisien avec des matériaux premium.",
-    image: "built-up-letters"
+    image: "/manita.jpg"
   },
   {
     icon: <Truck className="h-6 w-6" />,
     title: "Installation",
     description: "Pose sécurisée par nos techniciens spécialisés, incluant les raccordements électriques.",
-    image: "install-phase"
+    image: "/images/install-phase.jpg"
   }
 ];
 
@@ -47,13 +47,15 @@ export function Process() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {steps.map((step, index) => {
             const img = PlaceHolderImages.find(i => i.id === step.image);
+            const src = img ? img.imageUrl : step.image;
+            const alt = img ? img.description : step.title;
             return (
               <div key={index} className="relative group">
                 <div className="mb-6 relative rounded-2xl overflow-hidden aspect-video shadow-xl border border-white/5">
-                  {img && (
+                  {src && (
                     <Image 
-                      src={img.imageUrl} 
-                      alt={img.description} 
+                      src={src} 
+                      alt={alt} 
                       fill 
                       className="object-cover group-hover:scale-105 transition-transform duration-500"
                     />

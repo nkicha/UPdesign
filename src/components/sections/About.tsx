@@ -1,10 +1,7 @@
 
-import Image from "next/image";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { CheckCircle2 } from "lucide-react";
 
 export function About() {
-  const workshopImg = PlaceHolderImages.find((img) => img.id === "workshop");
 
   return (
     <section id="a-propos" className="py-24 overflow-hidden">
@@ -13,20 +10,19 @@ export function About() {
           <div className="relative order-2 lg:order-1">
             <div className="absolute -top-6 -left-6 w-24 h-24 border-t-4 border-l-4 border-primary rounded-tl-3xl hidden md:block" />
             <div className="absolute -bottom-6 -right-6 w-24 h-24 border-b-4 border-r-4 border-accent rounded-br-3xl hidden md:block" />
-            <div className="relative rounded-3xl overflow-hidden shadow-2xl">
-              {workshopImg && (
-                <Image
-                  src={workshopImg.imageUrl}
-                  alt={workshopImg.description}
-                  width={1200}
-                  height={800}
-                  className="object-cover"
-                />
-              )}
+            <div className="relative rounded-3xl overflow-hidden shadow-2xl aspect-video bg-black flex items-center justify-center">
+              <video
+                src="/hero_banner.mp4"
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="object-cover w-full h-full"
+              />
             </div>
-            <div className="absolute bottom-10 left-10 bg-background/90 backdrop-blur-md p-6 rounded-2xl border border-white/10 shadow-xl max-w-xs hidden sm:block">
-              <p className="text-3xl font-black text-primary mb-1">15+</p>
-              <p className="text-sm font-bold text-muted-foreground">Années d'expertise artisanale et technologique</p>
+            <div className="absolute bottom-8 left-8 bg-gradient-to-br from-primary to-accent p-4 rounded-2xl shadow-2xl border border-white/20 max-w-[200px] hidden sm:block transform hover:scale-105 transition-transform duration-300">
+              <p className="text-2xl font-black text-white mb-0.5">5+</p>
+              <p className="text-xs font-bold text-white/90 leading-snug">Années d'expertise artisanale et technologique</p>
             </div>
           </div>
 
