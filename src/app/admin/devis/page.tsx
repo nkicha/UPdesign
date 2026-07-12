@@ -5,6 +5,7 @@ import {
   getDevis,
   updateDevis,
   deleteDevis,
+  launchDevisAsCommande,
   downloadDevisPdf,
   DevisResponse,
   API_BASE_URL,
@@ -118,6 +119,24 @@ export default function DevisPage() {
     }
   };
 
+  const handleLaunchDevis = async (devis: DevisResponse) => {
+    if (!token) return;
+    try {
+      await launchDevisAsCommande(devis.id, token);
+      toast({
+        title: "Commande créée",
+        description: `Le devis #${getDevisNumber(devis.id)} a été envoyé dans les commandes en cours.`,
+      });
+      fetchData();
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erreur de lancement",
+        description: error instanceof Error ? error.message : "Impossible de transformer le devis en commande.",
+      });
+    }
+  };
+
   const filteredDevis = devisList.filter(
     (d) =>
       d.clientNom.toLowerCase().includes(devisSearch.toLowerCase()) ||
@@ -186,7 +205,7 @@ export default function DevisPage() {
         <Button
           size="sm"
           className="h-8 bg-sky-500 hover:bg-sky-600 gap-1.5 text-xs text-white"
-          onClick={() => handleUpdateDevisStatus(devis, "EN_COURS")}
+          onClick={() => handleLaunchDevis(devis)}
         >
           <Play className="h-3.5 w-3.5" />
           {size === "sm" && "Lancer"}

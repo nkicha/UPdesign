@@ -187,6 +187,16 @@ export async function updateDevis(
   });
 }
 
+export async function launchDevisAsCommande(
+  id: string,
+  token: string
+): Promise<{ devis: DevisResponse; commande: CommandeResponse }> {
+  return apiFetch(`/api/devis/${id}/commande`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
 export async function deleteDevis(id: string, token: string): Promise<void> {
   return apiFetch(`/api/devis/${id}`, {
     method: "DELETE",
