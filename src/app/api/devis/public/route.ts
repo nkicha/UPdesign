@@ -30,8 +30,7 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
 
     const name = formData.get("name") as string | null;
-    const email = formData.get("email") as string | null;
-    const phone = (formData.get("phone") as string) ?? "";
+    const phone = formData.get("phone") as string | null;
     const message = (formData.get("message") as string) ?? "";
     const serviceType = (formData.get("service-type") as string) || (formData.get("serviceType") as string) || "";
     const budget = (formData.get("budget") as string) ?? "";
@@ -40,7 +39,6 @@ export async function POST(request: NextRequest) {
     // Log the incoming payload once for debugging
     console.log("[devis/public] POST payload:", {
       name,
-      email,
       phone,
       message,
       serviceType,
@@ -48,9 +46,9 @@ export async function POST(request: NextRequest) {
       fileName: file ? file.name : null,
     });
 
-    if (!name || !email) {
+    if (!name || !phone) {
       return NextResponse.json(
-        { message: "Nom et email requis." },
+        { message: "Nom et téléphone requis." },
         { status: 400 }
       );
     }
@@ -77,13 +75,14 @@ export async function POST(request: NextRequest) {
     const pb = await getPocketBaseAdmin();
     console.log("[devis/public] Step 1 OK. Auth valid:", pb.authStore.isValid);
 
-    // 2. Find or create a client record
+    // 2. Find or create a client record by telephone
     let clientId: string;
+    const cleanedPhone = phone.trim();
     try {
-      console.log("[devis/public] Step 2: Looking up client by email:", email);
+      console.log("[devis/public] Step 2: Looking up client by telephone:", cleanedPhone);
       const existing = await pb
         .collection("clients")
-        .getFirstListItem(`email = "${email}"`);
+        .getFirstListItem(`telephone = "${cleanedPhone}"`);
       clientId = existing.id;
       console.log("[devis/public] Step 2 OK: Found existing client:", clientId);
     } catch (clientErr: unknown) {
@@ -93,8 +92,8 @@ export async function POST(request: NextRequest) {
         console.log("[devis/public] Step 3: Creating new client...");
         const clientPayload = {
           nom: name,
-          email: email,
-          telephone: phone.trim() || "Non spécifié",
+          email: `${cleanedPhone.replace(/[^0-9]/g, "") || "0000000000"}@updesign.ma`,
+          telephone: cleanedPhone,
           adresse: "Non spécifiée",
           societe: "Non spécifiée",
         };

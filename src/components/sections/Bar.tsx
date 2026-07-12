@@ -38,11 +38,11 @@ export function Bar() {
   }, []);
 
   const navLinks = [
-    // { href: "#services", label: "Services" },
-    { href: "#portfolio", label: "Portfolio" },
-    { href: "#devis", label: "Devis" },
-    { href: "#a-propos", label: "À Propos" },
-    { href: "#contact", label: "Contact" },
+    { href: "/#portfolio", label: "Portfolio" },
+    { href: "/#devis", label: "Devis" },
+    { href: "/suivi", label: "Suivi Projet" },
+    { href: "/#a-propos", label: "À Propos" },
+    { href: "/#contact", label: "Contact" },
   ];
 
   return (
@@ -128,7 +128,7 @@ export function Bar() {
           ))}
           <div className="pt-6 space-y-3">
             <Button asChild className="w-full bg-primary font-bold py-6 text-lg">
-              <Link href="#devis" onClick={() => setIsOpen(false)}>Demander un Devis</Link>
+              <Link href="/#devis" onClick={() => setIsOpen(false)}>Demander un Devis</Link>
             </Button>
             <Button asChild variant="outline" className="w-full border-border dark:border-white/10 bg-transparent hover:bg-secondary dark:hover:bg-white/5 text-foreground dark:text-white py-6 text-lg transition-colors duration-300">
               <Link href="/admin" onClick={() => setIsOpen(false)}>Espace Admin</Link>

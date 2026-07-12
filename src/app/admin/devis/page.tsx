@@ -14,6 +14,8 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useAdminAuth } from "@/lib/auth";
+import { Skeleton } from "@/components/ui/skeleton";
+import { motion } from "framer-motion";
 import {
   FileText,
   Search,
@@ -128,6 +130,22 @@ export default function DevisPage() {
     return idx !== -1 ? idx + 1 : 1;
   };
 
+  // Framer Motion Variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 15 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100, damping: 15 } },
+  };
+
   return (
     <>
       {/* ── Page Header ─────────────────────────────────────────────────── */}
@@ -168,7 +186,9 @@ export default function DevisPage() {
         </div>
 
         {/* ── List ────────────────────────────────────────────────────────── */}
-        {filteredDevis.length === 0 ? (
+        {loading && devisList.length === 0 ? (
+          <DevisListSkeleton />
+        ) : filteredDevis.length === 0 ? (
           <div className="text-center py-16 border-2 border-dashed border-white/5 rounded-2xl bg-card/10">
             <FileText className="mx-auto h-12 w-12 text-muted-foreground mb-4 opacity-40" />
             <h3 className="text-lg font-bold">Aucun devis trouvé</h3>
@@ -177,163 +197,224 @@ export default function DevisPage() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-6">
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+            className="grid grid-cols-1 gap-6"
+          >
             {filteredDevis.map((devis) => (
-              <Card key={devis.id} className="bg-card/30 border-white/5 hover:border-white/10 transition-colors">
-                <CardHeader className="pb-3 flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
-                  <div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-xs font-mono px-2 py-1 rounded bg-white/5 text-muted-foreground border border-white/5">
-                        DEVIS #{getDevisNumber(devis.id)}
-                      </span>
-                      <span
-                        className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${
-                          devis.statut === "VALIDE"
-                            ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/25"
-                            : devis.statut === "ANNULE"
-                            ? "bg-red-500/10 text-red-400 border border-red-500/25"
-                            : devis.statut === "EN_COURS"
-                            ? "bg-sky-500/10 text-sky-400 border border-sky-500/25"
-                            : "bg-amber-500/10 text-amber-400 border border-amber-500/25"
-                        }`}
-                      >
-                        {devis.statut}
-                      </span>
-                    </div>
-                    <CardTitle className="text-xl font-bold mt-2 font-headline">{devis.clientNom}</CardTitle>
-                  </div>
-
-                  <div className="text-right">
-                    <div className="text-2xl font-black text-primary">
-                      {(devis.prix ?? 0).toLocaleString("fr-FR")} DH
-                    </div>
-                    <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1.5 justify-end">
-                      <Calendar className="h-3 w-3" />
-                      {new Date(devis.dateCreation).toLocaleDateString("fr-FR")}
-                    </div>
-                  </div>
-                </CardHeader>
-
-                <CardContent className="space-y-4">
-                  {/* Technical specs */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-background/30 p-3 rounded-lg border border-white/5 text-sm">
+              <motion.div
+                key={devis.id}
+                variants={itemVariants}
+                layout
+                whileHover={{ y: -2, transition: { duration: 0.2 } }}
+              >
+                <Card className="bg-card/30 border-white/5 hover:border-white/10 transition-colors shadow-md">
+                  <CardHeader className="pb-3 flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
                     <div>
-                      <span className="text-xs text-muted-foreground block">Type Enseigne</span>
-                      <span className="font-semibold text-white">{devis.typePanneau || "Non spécifié"}</span>
-                    </div>
-                    <div>
-                      <span className="text-xs text-muted-foreground block">Dimensions / Délai</span>
-                      <span className="font-semibold text-white">{devis.dimensions || "Non spécifiées"}</span>
-                    </div>
-                    <div>
-                      <span className="text-xs text-muted-foreground block">Matières</span>
-                      <span className="font-semibold text-white">{devis.matiere || "Non spécifiée"}</span>
-                    </div>
-                  </div>
-
-                  {/* Description */}
-                  {devis.description && (
-                    <div className="text-sm text-muted-foreground bg-background/10 p-3 rounded border border-white/5 whitespace-pre-line">
-                      {devis.description}
-                    </div>
-                  )}
-
-                  {/* Attached file */}
-                  {devis.fileUrl && (
-                    <div className="flex items-center gap-4 p-3 bg-secondary/5 border border-border dark:border-white/5 rounded-lg text-sm transition-all">
-                      <Paperclip className="h-5 w-5 text-primary shrink-0 animate-pulse-slow" />
-                      <div className="flex-1 min-w-0">
-                        <span className="text-xs text-muted-foreground block">
-                          Fichier de référence (logo, plan, façade)
+                      <div className="flex items-center gap-3">
+                        <span className="text-xs font-mono px-2 py-1 rounded bg-white/5 text-muted-foreground border border-white/5">
+                          DEVIS #{getDevisNumber(devis.id)}
                         </span>
-                        <a
-                          href={devis.fileUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm font-semibold text-primary hover:underline hover:text-primary/80 transition-colors truncate flex items-center gap-1 mt-0.5"
+                        <span
+                          className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${
+                            devis.statut === "VALIDE"
+                              ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/25"
+                              : devis.statut === "ANNULE"
+                              ? "bg-red-500/10 text-red-400 border border-red-500/25"
+                              : devis.statut === "EN_COURS"
+                              ? "bg-sky-500/10 text-sky-400 border border-sky-500/25"
+                              : "bg-amber-500/10 text-amber-400 border border-amber-500/25"
+                          }`}
                         >
-                          <Eye className="h-3.5 w-3.5" />
-                          Visualiser / Télécharger le document
-                        </a>
+                          {devis.statut}
+                        </span>
                       </div>
-                      {/\.(jpg|jpeg|png|gif|webp)$/i.test(devis.fileUrl) && (
-                        <a
-                          href={devis.fileUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="shrink-0"
-                        >
-                          <img
-                            src={devis.fileUrl}
-                            alt="Aperçu"
-                            className="h-12 w-12 object-cover rounded border border-border dark:border-white/10 hover:opacity-80 transition-all shadow-md"
-                          />
-                        </a>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Actions */}
-                  <div className="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-white/5">
-                    <div className="flex items-center gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleDownloadPdf(devis.id)}
-                        className="h-8 border-white/10 hover:bg-white/5 gap-1.5 text-xs text-sky-400 hover:text-sky-300"
-                      >
-                        <Download className="h-3.5 w-3.5" />
-                        Télécharger PDF
-                      </Button>
+                      <CardTitle className="text-xl font-bold mt-2 font-headline">{devis.clientNom}</CardTitle>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      {devis.statut === "EN_ATTENTE" && (
-                        <>
-                          <Button
-                            size="sm"
-                            className="h-8 bg-emerald-500 hover:bg-emerald-600 gap-1.5 text-xs text-white"
-                            onClick={() => handleUpdateDevisStatus(devis, "VALIDE")}
+                    <div className="text-right">
+                      <div className="text-2xl font-black text-primary">
+                        {(devis.prix ?? 0).toLocaleString("fr-FR")} DH
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1.5 justify-end">
+                        <Calendar className="h-3 w-3" />
+                        {new Date(devis.dateCreation).toLocaleDateString("fr-FR")}
+                      </div>
+                    </div>
+                  </CardHeader>
+
+                  <CardContent className="space-y-4">
+                    {/* Technical specs */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-background/30 p-3 rounded-lg border border-white/5 text-sm">
+                      <div>
+                        <span className="text-xs text-muted-foreground block">Type Enseigne</span>
+                        <span className="font-semibold text-white">{devis.typePanneau || "Non spécifié"}</span>
+                      </div>
+                      <div>
+                        <span className="text-xs text-muted-foreground block">Dimensions / Délai</span>
+                        <span className="font-semibold text-white">{devis.dimensions || "Non spécifiées"}</span>
+                      </div>
+                      <div>
+                        <span className="text-xs text-muted-foreground block">Matières</span>
+                        <span className="font-semibold text-white">{devis.matiere || "Non spécifiée"}</span>
+                      </div>
+                    </div>
+
+                    {/* Description */}
+                    {devis.description && (
+                      <div className="text-sm text-muted-foreground bg-background/10 p-3 rounded border border-white/5 whitespace-pre-line">
+                        {devis.description}
+                      </div>
+                    )}
+
+                    {/* Attached file */}
+                    {devis.fileUrl && (
+                      <div className="flex items-center gap-4 p-3 bg-secondary/5 border border-border dark:border-white/5 rounded-lg text-sm transition-all">
+                        <Paperclip className="h-5 w-5 text-primary shrink-0 animate-pulse-slow" />
+                        <div className="flex-1 min-w-0">
+                          <span className="text-xs text-muted-foreground block">
+                            Fichier de référence (logo, plan, façade)
+                          </span>
+                          <a
+                            href={devis.fileUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm font-semibold text-primary hover:underline hover:text-primary/80 transition-colors truncate flex items-center gap-1 mt-0.5"
                           >
-                            <CheckCircle className="h-3.5 w-3.5" />
-                            Valider
-                          </Button>
-                          <Button
-                            size="sm"
-                            className="h-8 bg-red-500 hover:bg-red-600 gap-1.5 text-xs text-white"
-                            onClick={() => handleUpdateDevisStatus(devis, "ANNULE")}
+                            <Eye className="h-3.5 w-3.5" />
+                            Visualiser / Télécharger le document
+                          </a>
+                        </div>
+                        {/\.(jpg|jpeg|png|gif|webp)$/i.test(devis.fileUrl) && (
+                          <a
+                            href={devis.fileUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="shrink-0"
                           >
-                            <XCircle className="h-3.5 w-3.5" />
-                            Annuler
-                          </Button>
-                        </>
-                      )}
-                      {devis.statut === "VALIDE" && (
+                            <img
+                              src={devis.fileUrl}
+                              alt="Aperçu"
+                              className="h-12 w-12 object-cover rounded border border-border dark:border-white/10 hover:opacity-80 transition-all shadow-md"
+                            />
+                          </a>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Actions */}
+                    <div className="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-white/5">
+                      <div className="flex items-center gap-2">
                         <Button
                           size="sm"
-                          className="h-8 bg-sky-500 hover:bg-sky-600 gap-1.5 text-xs text-white"
-                          onClick={() => handleUpdateDevisStatus(devis, "EN_COURS")}
+                          variant="outline"
+                          onClick={() => handleDownloadPdf(devis.id)}
+                          className="h-8 border-white/10 hover:bg-white/5 gap-1.5 text-xs text-sky-400 hover:text-sky-300"
                         >
-                          <Play className="h-3.5 w-3.5" />
-                          Lancer Production
+                          <Download className="h-3.5 w-3.5" />
+                          Télécharger PDF
                         </Button>
-                      )}
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-8 text-red-500 hover:text-red-400 hover:bg-red-500/10"
-                        onClick={() => handleDeleteDevis(devis.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        {devis.statut === "EN_ATTENTE" && (
+                          <>
+                            <Button
+                              size="sm"
+                              className="h-8 bg-emerald-500 hover:bg-emerald-600 gap-1.5 text-xs text-white"
+                              onClick={() => handleUpdateDevisStatus(devis, "VALIDE")}
+                            >
+                              <CheckCircle className="h-3.5 w-3.5" />
+                              Valider
+                            </Button>
+                            <Button
+                              size="sm"
+                              className="h-8 bg-red-500 hover:bg-red-600 gap-1.5 text-xs text-white"
+                              onClick={() => handleUpdateDevisStatus(devis, "ANNULE")}
+                            >
+                              <XCircle className="h-3.5 w-3.5" />
+                              Annuler
+                            </Button>
+                          </>
+                        )}
+                        {devis.statut === "VALIDE" && (
+                          <Button
+                            size="sm"
+                            className="h-8 bg-sky-500 hover:bg-sky-600 gap-1.5 text-xs text-white"
+                            onClick={() => handleUpdateDevisStatus(devis, "EN_COURS")}
+                          >
+                            <Play className="h-3.5 w-3.5" />
+                            Lancer Production
+                          </Button>
+                        )}
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-8 text-red-500 hover:text-red-400 hover:bg-red-500/10"
+                          onClick={() => handleDeleteDevis(devis.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
       </div>
     </>
+  );
+}
+
+function DevisListSkeleton() {
+  return (
+    <div className="grid grid-cols-1 gap-6">
+      {[...Array(3)].map((_, i) => (
+        <Card key={i} className="bg-card/30 border-white/5 relative overflow-hidden animate-pulse">
+          <CardHeader className="pb-3 flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+            <div className="space-y-2">
+              <div className="flex items-center gap-3">
+                <Skeleton className="h-6 w-20 bg-white/5" />
+                <Skeleton className="h-5 w-16 rounded-full bg-white/5" />
+              </div>
+              <Skeleton className="h-6 w-48 bg-white/5" />
+            </div>
+
+            <div className="text-right space-y-2 flex flex-col items-end">
+              <Skeleton className="h-8 w-28 bg-white/5" />
+              <Skeleton className="h-4 w-20 bg-white/5" />
+            </div>
+          </CardHeader>
+
+          <CardContent className="space-y-4">
+            {/* Technical specs skeleton */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-background/30 p-3 rounded-lg border border-white/5">
+              {[...Array(3)].map((_, j) => (
+                <div key={j} className="space-y-2">
+                  <Skeleton className="h-3.5 w-16 bg-white/5" />
+                  <Skeleton className="h-4 w-24 bg-white/5" />
+                </div>
+              ))}
+            </div>
+
+            {/* Description skeleton */}
+            <Skeleton className="h-10 w-full bg-white/5" />
+
+            {/* Actions skeleton */}
+            <div className="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-white/5">
+              <Skeleton className="h-8 w-32 bg-white/5" />
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-8 w-20 bg-white/5" />
+                <Skeleton className="h-8 w-8 bg-white/5" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
   );
 }

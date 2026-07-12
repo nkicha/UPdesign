@@ -17,6 +17,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useAdminAuth } from "@/lib/auth";
+import { Skeleton } from "@/components/ui/skeleton";
+import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingBag, Trash2, Plus, Loader2, Calendar, Download } from "lucide-react";
 
 export default function CommandesPage() {
@@ -147,6 +149,22 @@ export default function CommandesPage() {
     return idx !== -1 ? idx + 1 : 1;
   };
 
+  // Framer Motion Variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 15 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100, damping: 15 } },
+  };
+
   return (
     <>
       {/* ── Page Header ─────────────────────────────────────────────────── */}
@@ -172,14 +190,14 @@ export default function CommandesPage() {
       <div className="space-y-6">
         {/* ── Toolbar ─────────────────────────────────────────────────────── */}
         <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-card/20 p-4 rounded-xl border border-white/5">
-          <div className="text-sm font-semibold">Gestion des projets en cours de fabrication.</div>
+          <div className="text-sm font-semibold text-foreground/80">Gestion des projets en cours de fabrication.</div>
           <Button
             onClick={() => {
               setEditingCommande(null);
               setCommandeForm({ clientId: "", typePanneau: "", dimensions: "", matiere: "", prix: "", statut: "EN_ATTENTE" });
               setShowAddCommande(!showAddCommande);
             }}
-            className="bg-emerald-600 hover:bg-emerald-500 gap-2 h-10 font-bold"
+            className="bg-emerald-600 hover:bg-emerald-500 gap-2 h-10 font-bold transition-all shadow-md active:scale-95"
           >
             <Plus className="h-4 w-4" />
             Nouvelle Commande
@@ -187,115 +205,127 @@ export default function CommandesPage() {
         </div>
 
         {/* ── Add / Edit Form ──────────────────────────────────────────────── */}
-        {showAddCommande && (
-          <Card className="bg-card/40 border-emerald-500/20 shadow-xl relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-[2px] bg-emerald-500" />
-            <CardHeader>
-              <CardTitle className="text-lg font-bold">
-                {editingCommande ? "Modifier la Commande" : "Nouvelle Commande"}
-              </CardTitle>
-              <CardDescription>Enregistrez un nouveau projet de signalétique en production.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleCommandeSubmit} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="cmd_client">Sélectionner le Client *</Label>
-                    <select
-                      id="cmd_client"
-                      className="flex h-10 w-full rounded-md border border-input bg-background/50 px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                      value={commandeForm.clientId}
-                      onChange={(e) => setCommandeForm({ ...commandeForm, clientId: e.target.value })}
-                      required
-                    >
-                      <option value="" className="bg-[#2C2627]">-- Choisir un client --</option>
-                      {clientsList.map((c) => (
-                        <option key={c.id} value={c.id} className="bg-[#2C2627]">
-                          {c.nom} {c.societe ? `(${c.societe})` : ""}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+        <AnimatePresence>
+          {showAddCommande && (
+            <motion.div
+              initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+              animate={{ opacity: 1, height: "auto", marginBottom: 24 }}
+              exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="overflow-hidden"
+            >
+              <Card className="bg-card/40 border-emerald-500/20 shadow-xl relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-[2px] bg-emerald-500" />
+                <CardHeader>
+                  <CardTitle className="text-lg font-bold">
+                    {editingCommande ? "Modifier la Commande" : "Nouvelle Commande"}
+                  </CardTitle>
+                  <CardDescription>Enregistrez un nouveau projet de signalétique en production.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleCommandeSubmit} className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="cmd_client">Sélectionner le Client *</Label>
+                        <select
+                          id="cmd_client"
+                          className="flex h-10 w-full rounded-md border border-input bg-background/50 px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                          value={commandeForm.clientId}
+                          onChange={(e) => setCommandeForm({ ...commandeForm, clientId: e.target.value })}
+                          required
+                        >
+                          <option value="" className="bg-[#2C2627]">-- Choisir un client --</option>
+                          {clientsList.map((c) => (
+                            <option key={c.id} value={c.id} className="bg-[#2C2627]">
+                              {c.nom} {c.societe ? `(${c.societe})` : ""}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="cmd_type">Type Enseigne *</Label>
-                    <Input
-                      id="cmd_type"
-                      placeholder="Ex: Enseigne Néon LED"
-                      value={commandeForm.typePanneau}
-                      onChange={(e) => setCommandeForm({ ...commandeForm, typePanneau: e.target.value })}
-                      required
-                    />
-                  </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="cmd_type">Type Enseigne *</Label>
+                        <Input
+                          id="cmd_type"
+                          placeholder="Ex: Enseigne Néon LED"
+                          value={commandeForm.typePanneau}
+                          onChange={(e) => setCommandeForm({ ...commandeForm, typePanneau: e.target.value })}
+                          required
+                        />
+                      </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="cmd_dim">Dimensions</Label>
-                    <Input
-                      id="cmd_dim"
-                      placeholder="Ex: 120 x 80 cm"
-                      value={commandeForm.dimensions}
-                      onChange={(e) => setCommandeForm({ ...commandeForm, dimensions: e.target.value })}
-                    />
-                  </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="cmd_dim">Dimensions</Label>
+                        <Input
+                          id="cmd_dim"
+                          placeholder="Ex: 120 x 80 cm"
+                          value={commandeForm.dimensions}
+                          onChange={(e) => setCommandeForm({ ...commandeForm, dimensions: e.target.value })}
+                        />
+                      </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="cmd_mat">Matière / Description</Label>
-                    <Input
-                      id="cmd_mat"
-                      placeholder="Ex: Plexiglas + Néon flexible rouge"
-                      value={commandeForm.matiere}
-                      onChange={(e) => setCommandeForm({ ...commandeForm, matiere: e.target.value })}
-                    />
-                  </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="cmd_mat">Matière / Description</Label>
+                        <Input
+                          id="cmd_mat"
+                          placeholder="Ex: Plexiglas + Néon flexible rouge"
+                          value={commandeForm.matiere}
+                          onChange={(e) => setCommandeForm({ ...commandeForm, matiere: e.target.value })}
+                        />
+                      </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="cmd_prix">Prix Facturé (DH) *</Label>
-                    <Input
-                      id="cmd_prix"
-                      type="number"
-                      placeholder="Ex: 2450"
-                      value={commandeForm.prix}
-                      onChange={(e) => setCommandeForm({ ...commandeForm, prix: e.target.value })}
-                      required
-                    />
-                  </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="cmd_prix">Prix Facturé (DH) *</Label>
+                        <Input
+                          id="cmd_prix"
+                          type="number"
+                          placeholder="Ex: 2450"
+                          value={commandeForm.prix}
+                          onChange={(e) => setCommandeForm({ ...commandeForm, prix: e.target.value })}
+                          required
+                        />
+                      </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="cmd_statut">Statut Production *</Label>
-                    <select
-                      id="cmd_statut"
-                      className="flex h-10 w-full rounded-md border border-input bg-background/50 px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                      value={commandeForm.statut}
-                      onChange={(e) => setCommandeForm({ ...commandeForm, statut: e.target.value as "EN_ATTENTE" | "EN_COURS" | "TERMINEE" })}
-                      required
-                    >
-                      <option value="EN_ATTENTE" className="bg-[#2C2627]">En attente de démarrage</option>
-                      <option value="EN_COURS" className="bg-[#2C2627]">En cours de fabrication</option>
-                      <option value="TERMINEE" className="bg-[#2C2627]">Terminée / Prête à installer</option>
-                    </select>
-                  </div>
-                </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="cmd_statut">Statut Production *</Label>
+                        <select
+                          id="cmd_statut"
+                          className="flex h-10 w-full rounded-md border border-input bg-background/50 px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                          value={commandeForm.statut}
+                          onChange={(e) => setCommandeForm({ ...commandeForm, statut: e.target.value as "EN_ATTENTE" | "EN_COURS" | "TERMINEE" })}
+                          required
+                        >
+                          <option value="EN_ATTENTE" className="bg-[#2C2627]">En attente de démarrage</option>
+                          <option value="EN_COURS" className="bg-[#2C2627]">En cours de fabrication</option>
+                          <option value="TERMINEE" className="bg-[#2C2627]">Terminée / Prête à installer</option>
+                        </select>
+                      </div>
+                    </div>
 
-                <div className="flex justify-end gap-2 pt-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setShowAddCommande(false)}
-                    className="border-white/10 text-xs"
-                  >
-                    Annuler
-                  </Button>
-                  <Button type="submit" className="bg-emerald-600 hover:bg-emerald-500 text-xs font-bold">
-                    Enregistrer
-                  </Button>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
-        )}
+                    <div className="flex justify-end gap-2 pt-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setShowAddCommande(false)}
+                        className="border-white/10 text-xs"
+                      >
+                        Annuler
+                      </Button>
+                      <Button type="submit" className="bg-emerald-600 hover:bg-emerald-500 text-xs font-bold">
+                        Enregistrer
+                      </Button>
+                    </div>
+                  </form>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* ── Commandes List ───────────────────────────────────────────────── */}
-        {commandesList.length === 0 ? (
+        {loading && commandesList.length === 0 ? (
+          <CommandesListSkeleton />
+        ) : commandesList.length === 0 ? (
           <div className="text-center py-16 border-2 border-dashed border-white/5 rounded-2xl bg-card/10">
             <ShoppingBag className="mx-auto h-12 w-12 text-muted-foreground mb-4 opacity-40" />
             <h3 className="text-lg font-bold">Aucune commande en production</h3>
@@ -304,94 +334,150 @@ export default function CommandesPage() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-6">
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+            className="grid grid-cols-1 gap-6"
+          >
             {commandesList.map((cmd) => (
-              <Card key={cmd.id} className="bg-card/30 border-white/5">
-                <CardHeader className="pb-3 flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
-                  <div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-xs font-mono px-2 py-1 rounded bg-white/5 text-muted-foreground border border-white/5">
-                        COMMANDE #{getCommandeNumber(cmd.id)}
-                      </span>
-                      <span
-                        className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${
-                          cmd.statut === "TERMINEE"
-                            ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/25"
+              <motion.div
+                key={cmd.id}
+                variants={itemVariants}
+                layout
+                whileHover={{ y: -2, transition: { duration: 0.2 } }}
+              >
+                <Card className="bg-card/30 border-white/5 hover:border-white/10 transition-colors shadow-md">
+                  <CardHeader className="pb-3 flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+                    <div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-xs font-mono px-2 py-1 rounded bg-white/5 text-muted-foreground border border-white/5">
+                          COMMANDE #{getCommandeNumber(cmd.id)}
+                        </span>
+                        <span
+                          className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${
+                            cmd.statut === "TERMINEE"
+                              ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/25"
+                              : cmd.statut === "EN_COURS"
+                              ? "bg-sky-500/10 text-sky-400 border border-sky-500/25"
+                              : "bg-amber-500/10 text-amber-400 border border-amber-500/25"
+                          }`}
+                        >
+                          {cmd.statut === "TERMINEE"
+                            ? "TERMINEE (Prêt)"
                             : cmd.statut === "EN_COURS"
-                            ? "bg-sky-500/10 text-sky-400 border border-sky-500/25"
-                            : "bg-amber-500/10 text-amber-400 border border-amber-500/25"
-                        }`}
+                            ? "FABRICATION EN COURS"
+                            : "EN ATTENTE"}
+                        </span>
+                      </div>
+                      <CardTitle className="text-xl font-bold mt-2 font-headline">{cmd.clientNom}</CardTitle>
+                    </div>
+
+                    <div className="text-right">
+                      <div className="text-2xl font-black text-emerald-500">
+                        {(cmd.prix ?? 0).toLocaleString("fr-FR")} DH
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1.5 justify-end">
+                        <Calendar className="h-3 w-3" />
+                        {new Date(cmd.dateCreation).toLocaleDateString("fr-FR")}
+                      </div>
+                    </div>
+                  </CardHeader>
+
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-background/30 p-3 rounded-lg border border-white/5 text-sm">
+                      <div>
+                        <span className="text-xs text-muted-foreground block">Projet</span>
+                        <span className="font-semibold text-white">{cmd.typePanneau}</span>
+                      </div>
+                      <div>
+                        <span className="text-xs text-muted-foreground block">Dimensions</span>
+                        <span className="font-semibold text-white">{cmd.dimensions || "Non spécifiées"}</span>
+                      </div>
+                      <div>
+                        <span className="text-xs text-muted-foreground block">Détails Matière</span>
+                        <span className="font-semibold text-white">{cmd.matiere || "Non spécifiés"}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end gap-2 pt-2 border-t border-white/5">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-8 border-white/10 hover:bg-white/5 gap-1.5 text-xs text-sky-400 hover:text-sky-300"
+                        onClick={() => handleDownloadBl(cmd.id)}
                       >
-                        {cmd.statut === "TERMINEE"
-                          ? "TERMINEE (Prêt)"
-                          : cmd.statut === "EN_COURS"
-                          ? "FABRICATION EN COURS"
-                          : "EN ATTENTE"}
-                      </span>
+                        <Download className="h-3.5 w-3.5" />
+                        BL PDF
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-8 border-white/10 hover:bg-white/5 text-xs text-emerald-400"
+                        onClick={() => startEditCommande(cmd)}
+                      >
+                        Modifier
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-8 text-red-500 hover:text-red-400 hover:bg-red-500/10"
+                        onClick={() => handleDeleteCommande(cmd.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
-                    <CardTitle className="text-xl font-bold mt-2 font-headline">{cmd.clientNom}</CardTitle>
-                  </div>
-
-                  <div className="text-right">
-                    <div className="text-2xl font-black text-emerald-500">
-                      {(cmd.prix ?? 0).toLocaleString("fr-FR")} DH
-                    </div>
-                    <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1.5 justify-end">
-                      <Calendar className="h-3 w-3" />
-                      {new Date(cmd.dateCreation).toLocaleDateString("fr-FR")}
-                    </div>
-                  </div>
-                </CardHeader>
-
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-background/30 p-3 rounded-lg border border-white/5 text-sm">
-                    <div>
-                      <span className="text-xs text-muted-foreground block">Projet</span>
-                      <span className="font-semibold text-white">{cmd.typePanneau}</span>
-                    </div>
-                    <div>
-                      <span className="text-xs text-muted-foreground block">Dimensions</span>
-                      <span className="font-semibold text-white">{cmd.dimensions || "Non spécifiées"}</span>
-                    </div>
-                    <div>
-                      <span className="text-xs text-muted-foreground block">Détails Matière</span>
-                      <span className="font-semibold text-white">{cmd.matiere || "Non spécifiés"}</span>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-end gap-2 pt-2 border-t border-white/5">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="h-8 border-white/10 hover:bg-white/5 gap-1.5 text-xs text-sky-400 hover:text-sky-300"
-                      onClick={() => handleDownloadBl(cmd.id)}
-                    >
-                      <Download className="h-3.5 w-3.5" />
-                      BL PDF
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="h-8 border-white/10 hover:bg-white/5 text-xs text-emerald-400"
-                      onClick={() => startEditCommande(cmd)}
-                    >
-                      Modifier
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-8 text-red-500 hover:text-red-400 hover:bg-red-500/10"
-                      onClick={() => handleDeleteCommande(cmd.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
       </div>
     </>
+  );
+}
+
+function CommandesListSkeleton() {
+  return (
+    <div className="grid grid-cols-1 gap-6">
+      {[...Array(3)].map((_, i) => (
+        <Card key={i} className="bg-card/30 border-white/5 relative overflow-hidden animate-pulse">
+          <CardHeader className="pb-3 flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+            <div className="space-y-2">
+              <div className="flex items-center gap-3">
+                <Skeleton className="h-6 w-24 bg-white/5" />
+                <Skeleton className="h-5 w-20 rounded-full bg-white/5" />
+              </div>
+              <Skeleton className="h-6 w-48 bg-white/5" />
+            </div>
+
+            <div className="text-right space-y-2 flex flex-col items-end">
+              <Skeleton className="h-8 w-28 bg-white/5" />
+              <Skeleton className="h-4 w-20 bg-white/5" />
+            </div>
+          </CardHeader>
+
+          <CardContent className="space-y-4">
+            {/* Technical specs skeleton */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-background/30 p-3 rounded-lg border border-white/5">
+              {[...Array(3)].map((_, j) => (
+                <div key={j} className="space-y-2">
+                  <Skeleton className="h-3.5 w-16 bg-white/5" />
+                  <Skeleton className="h-4 w-24 bg-white/5" />
+                </div>
+              ))}
+            </div>
+
+            {/* Actions skeleton */}
+            <div className="flex justify-end gap-2 pt-2 border-t border-white/5">
+              <Skeleton className="h-8 w-24 bg-white/5" />
+              <Skeleton className="h-8 w-20 bg-white/5" />
+              <Skeleton className="h-8 w-8 bg-white/5" />
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
   );
 }

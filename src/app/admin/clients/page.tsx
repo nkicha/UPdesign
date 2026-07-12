@@ -14,6 +14,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useAdminAuth } from "@/lib/auth";
+import { Skeleton } from "@/components/ui/skeleton";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Users,
   Search,
@@ -125,6 +127,22 @@ export default function ClientsPage() {
       (c.societe && c.societe.toLowerCase().includes(clientSearch.toLowerCase()))
   );
 
+  // Framer Motion Variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 15 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100, damping: 15 } },
+  };
+
   return (
     <>
       {/* ── Page Header ─────────────────────────────────────────────────── */}
@@ -165,7 +183,7 @@ export default function ClientsPage() {
               setClientForm({ nom: "", email: "", telephone: "", adresse: "", societe: "" });
               setShowAddClient(!showAddClient);
             }}
-            className="bg-[#E61A3D] hover:bg-[#E61A3D]/90 gap-2 h-10 font-bold"
+            className="bg-[#E61A3D] hover:bg-[#E61A3D]/90 gap-2 h-10 font-bold transition-all shadow-md active:scale-95"
           >
             <Plus className="h-4 w-4" />
             Nouveau Client
@@ -173,90 +191,102 @@ export default function ClientsPage() {
         </div>
 
         {/* ── Add / Edit Form ──────────────────────────────────────────────── */}
-        {showAddClient && (
-          <Card className="bg-card/40 border-[#E61A3D]/20 shadow-xl relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-[2px] bg-primary" />
-            <CardHeader>
-              <CardTitle className="text-lg font-bold">
-                {editingClient ? "Modifier le Client" : "Nouveau Client"}
-              </CardTitle>
-              <CardDescription>Entrez les coordonnées du client dans la base de données.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleClientSubmit} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="c_nom">Nom Complet *</Label>
-                    <Input
-                      id="c_nom"
-                      placeholder="Ex: Jean Dupont"
-                      value={clientForm.nom}
-                      onChange={(e) => setClientForm({ ...clientForm, nom: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="c_email">Email *</Label>
-                    <Input
-                      id="c_email"
-                      type="email"
-                      placeholder="Ex: jean.dupont@entreprise.com"
-                      value={clientForm.email}
-                      onChange={(e) => setClientForm({ ...clientForm, email: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="c_tel">Téléphone *</Label>
-                    <Input
-                      id="c_tel"
-                      placeholder="Ex: 06 12 34 56 78"
-                      value={clientForm.telephone}
-                      onChange={(e) => setClientForm({ ...clientForm, telephone: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="c_societe">Société / Entreprise</Label>
-                    <Input
-                      id="c_societe"
-                      placeholder="Ex: UP Corp"
-                      value={clientForm.societe}
-                      onChange={(e) => setClientForm({ ...clientForm, societe: e.target.value })}
-                    />
-                  </div>
-                </div>
+        <AnimatePresence>
+          {showAddClient && (
+            <motion.div
+              initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+              animate={{ opacity: 1, height: "auto", marginBottom: 24 }}
+              exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="overflow-hidden"
+            >
+              <Card className="bg-card/40 border-[#E61A3D]/20 shadow-xl relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-[2px] bg-primary" />
+                <CardHeader>
+                  <CardTitle className="text-lg font-bold">
+                    {editingClient ? "Modifier le Client" : "Nouveau Client"}
+                  </CardTitle>
+                  <CardDescription>Entrez les coordonnées du client dans la base de données.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleClientSubmit} className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="c_nom">Nom Complet *</Label>
+                        <Input
+                          id="c_nom"
+                          placeholder="Nome"
+                          value={clientForm.nom}
+                          onChange={(e) => setClientForm({ ...clientForm, nom: e.target.value })}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="c_email">Email *</Label>
+                        <Input
+                          id="c_email"
+                          type="email"
+                          placeholder="Ex: jean.dupont@entreprise.com"
+                          value={clientForm.email}
+                          onChange={(e) => setClientForm({ ...clientForm, email: e.target.value })}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="c_tel">Téléphone *</Label>
+                        <Input
+                          id="c_tel"
+                          placeholder="Ex: 06 12 34 56 78"
+                          value={clientForm.telephone}
+                          onChange={(e) => setClientForm({ ...clientForm, telephone: e.target.value })}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="c_societe">Société / Entreprise</Label>
+                        <Input
+                          id="c_societe"
+                          placeholder="Ex: UP Corp"
+                          value={clientForm.societe}
+                          onChange={(e) => setClientForm({ ...clientForm, societe: e.target.value })}
+                        />
+                      </div>
+                    </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="c_adresse">Adresse</Label>
-                  <Input
-                    id="c_adresse"
-                    placeholder="Ex: 10 Rue des Enseignes, 75000 Paris"
-                    value={clientForm.adresse}
-                    onChange={(e) => setClientForm({ ...clientForm, adresse: e.target.value })}
-                  />
-                </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="c_adresse">Adresse</Label>
+                      <Input
+                        id="c_adresse"
+                        placeholder="Ex: 10 Rue des Enseignes, 75000 Paris"
+                        value={clientForm.adresse}
+                        onChange={(e) => setClientForm({ ...clientForm, adresse: e.target.value })}
+                      />
+                    </div>
 
-                <div className="flex justify-end gap-2 pt-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setShowAddClient(false)}
-                    className="border-white/10 text-xs"
-                  >
-                    Annuler
-                  </Button>
-                  <Button type="submit" className="bg-[#E61A3D] hover:bg-[#E61A3D]/90 text-xs font-bold">
-                    Sauvegarder
-                  </Button>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
-        )}
+                    <div className="flex justify-end gap-2 pt-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setShowAddClient(false)}
+                        className="border-white/10 text-xs"
+                      >
+                        Annuler
+                      </Button>
+                      <Button type="submit" className="bg-[#E61A3D] hover:bg-[#E61A3D]/90 text-xs font-bold">
+                        Sauvegarder
+                      </Button>
+                    </div>
+                  </form>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* ── Clients Grid ────────────────────────────────────────────────── */}
-        {filteredClients.length === 0 ? (
+        {loading && clientsList.length === 0 ? (
+          <ClientsGridSkeleton />
+        ) : filteredClients.length === 0 ? (
           <div className="text-center py-16 border-2 border-dashed border-white/5 rounded-2xl bg-card/10">
             <Users className="mx-auto h-12 w-12 text-muted-foreground mb-4 opacity-40" />
             <h3 className="text-lg font-bold">Aucun client trouvé</h3>
@@ -265,65 +295,118 @@ export default function ClientsPage() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+            className="grid grid-cols-1 md:grid-cols-2 gap-6"
+          >
             {filteredClients.map((client) => (
-              <Card key={client.id} className="bg-card/30 border-white/5 relative overflow-hidden">
-                <CardHeader className="pb-3">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <CardTitle className="text-xl font-bold font-headline">{client.nom}</CardTitle>
-                      {client.societe && (
-                        <span className="text-xs text-[#DD6FEE] mt-1 flex items-center gap-1">
-                          <Building className="h-3.5 w-3.5" />
-                          {client.societe}
-                        </span>
+              <motion.div
+                key={client.id}
+                variants={itemVariants}
+                layout
+                whileHover={{ y: -2, transition: { duration: 0.2 } }}
+              >
+                <Card className="bg-card/30 border-white/5 relative overflow-hidden h-full shadow-md">
+                  <CardHeader className="pb-3">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <CardTitle className="text-xl font-bold font-headline text-foreground">{client.nom}</CardTitle>
+                        {client.societe && (
+                          <span className="text-xs text-[#DD6FEE] mt-1 flex items-center gap-1 font-medium">
+                            <Building className="h-3.5 w-3.5" />
+                            {client.societe}
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-xs font-mono text-muted-foreground">ID #{client.id}</span>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-2.5">
+                        <Mail className="h-4 w-4 text-primary shrink-0" />
+                        <span className="truncate">{client.email}</span>
+                      </div>
+                      <div className="flex items-center gap-2.5">
+                        <Phone className="h-4 w-4 text-primary shrink-0" />
+                        <span>{client.telephone}</span>
+                      </div>
+                      {client.adresse && (
+                        <div className="flex items-center gap-2.5">
+                          <MapPin className="h-4 w-4 text-primary shrink-0" />
+                          <span className="line-clamp-1">{client.adresse}</span>
+                        </div>
                       )}
                     </div>
-                    <span className="text-xs font-mono text-muted-foreground">ID #{client.id}</span>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-2.5">
-                      <Mail className="h-4 w-4 text-primary shrink-0" />
-                      <span className="truncate">{client.email}</span>
-                    </div>
-                    <div className="flex items-center gap-2.5">
-                      <Phone className="h-4 w-4 text-primary shrink-0" />
-                      <span>{client.telephone}</span>
-                    </div>
-                    {client.adresse && (
-                      <div className="flex items-center gap-2.5">
-                        <MapPin className="h-4 w-4 text-primary shrink-0" />
-                        <span className="line-clamp-1">{client.adresse}</span>
-                      </div>
-                    )}
-                  </div>
 
-                  <div className="flex justify-end gap-2 pt-3 border-t border-white/5">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="h-8 border-white/10 hover:bg-white/5 text-xs text-[#DD6FEE]"
-                      onClick={() => startEditClient(client)}
-                    >
-                      Modifier
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-8 text-red-500 hover:text-red-400 hover:bg-red-500/10"
-                      onClick={() => handleDeleteClient(client.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+                    <div className="flex justify-end gap-2 pt-3 border-t border-white/5">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-8 border-white/10 hover:bg-white/5 text-xs text-[#DD6FEE]"
+                        onClick={() => startEditClient(client)}
+                      >
+                        Modifier
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-8 text-red-500 hover:text-red-400 hover:bg-red-500/10"
+                        onClick={() => handleDeleteClient(client.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
       </div>
     </>
+  );
+}
+
+function ClientsGridSkeleton() {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {[...Array(4)].map((_, i) => (
+        <Card key={i} className="bg-card/30 border-white/5 relative overflow-hidden animate-pulse">
+          <CardHeader className="pb-3">
+            <div className="flex justify-between items-start">
+              <div className="space-y-2">
+                <Skeleton className="h-6 w-36 bg-white/5" />
+                <Skeleton className="h-4 w-24 bg-white/5" />
+              </div>
+              <Skeleton className="h-4 w-16 bg-white/5" />
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2.5">
+                <Skeleton className="h-4 w-4 bg-white/5 rounded-full" />
+                <Skeleton className="h-4 w-48 bg-white/5" />
+              </div>
+              <div className="flex items-center gap-2.5">
+                <Skeleton className="h-4 w-4 bg-white/5 rounded-full" />
+                <Skeleton className="h-4 w-32 bg-white/5" />
+              </div>
+              <div className="flex items-center gap-2.5">
+                <Skeleton className="h-4 w-4 bg-white/5 rounded-full" />
+                <Skeleton className="h-4 w-56 bg-white/5" />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-3 border-t border-white/5">
+              <Skeleton className="h-8 w-20 bg-white/5" />
+              <Skeleton className="h-8 w-8 bg-white/5" />
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
   );
 }
