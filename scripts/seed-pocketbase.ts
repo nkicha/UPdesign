@@ -5,14 +5,14 @@ import * as path from 'path';
 // Load env vars
 dotenv.config({ path: path.resolve(__dirname, '../.env.local') });
 
-const pbUrl = process.env.POCKETBASE_URL;
+const pbUrl = process.env.NEXT_PUBLIC_POCKETBASE_URL;
 
 async function run() {
   const email = process.argv[2];
   const password = process.argv[3];
 
   if (!pbUrl) {
-    console.error('Error: POCKETBASE_URL is not defined in env.');
+    console.error('Error: NEXT_PUBLIC_POCKETBASE_URL is not defined in env.');
     process.exit(1);
   }
 

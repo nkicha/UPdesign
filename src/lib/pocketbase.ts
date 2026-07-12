@@ -1,6 +1,6 @@
 import PocketBase from "pocketbase";
 
-const PB_URL = process.env.POCKETBASE_URL;
+const PB_URL = process.env.NEXT_PUBLIC_POCKETBASE_URL;
 
 /**
  * Server-side PocketBase singleton.

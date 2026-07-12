@@ -14,7 +14,7 @@ function toDevisResponse(r: RecordModel) {
     description: r.description ?? undefined,
     statut: r.statut,
     fileUrl: r.file
-      ? `${process.env.POCKETBASE_URL || "http://127.0.0.1:8090"}/api/files/devis/${r.id}/${r.file}`
+      ? `${process.env.NEXT_PUBLIC_POCKETBASE_URL || "http://127.0.0.1:8090"}/api/files/devis/${r.id}/${r.file}`
       : undefined,
     dateCreation: r.created || new Date().toISOString(),
   };

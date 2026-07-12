@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Phone, Mail, MapPin, Clock, Instagram, Facebook,  } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, Instagram, Facebook, } from "lucide-react";
 import { SiTiktok } from '@icons-pack/react-simple-icons';
 
 export function Contact() {
@@ -61,15 +61,21 @@ export function Contact() {
             </div>
 
             <div className="pt-4 flex justify-center lg:justify-start gap-4">
-              <Button variant="outline" size="icon" className="h-12 w-12 rounded-xl border-white/10 hover:border-primary">
-                <Instagram className="h-6 w-6" />
-              </Button>
-              <Button variant="outline" size="icon" className="h-12 w-12 rounded-xl border-white/10 hover:border-primary">
-                <Facebook className="h-6 w-6" />
-              </Button>
-              <Button variant="outline" size="icon" className="h-12 w-12 rounded-xl border-white/10 hover:border-primary">
-                <SiTiktok className="h-6 w-6" />
-              </Button>
+              <a href="https://www.instagram.com/ultra_pub_design/?hl=en">
+                <Button variant="outline" size="icon" className="h-12 w-12 rounded-xl border-white/10 hover:border-primary">
+                  <Instagram className="h-6 w-6" />
+                </Button>
+              </a>
+              <a href="https://www.facebook.com/ultrapubdesign/">
+                <Button variant="outline" size="icon" className="h-12 w-12 rounded-xl border-white/10 hover:border-primary">
+                  <Facebook className="h-6 w-6" />
+                </Button>
+              </a>
+              <a href="https://www.tiktok.com/@ultrapubdesign">
+                <Button variant="outline" size="icon" className="h-12 w-12 rounded-xl border-white/10 hover:border-primary">
+                  <SiTiktok className="h-6 w-6" />
+                </Button>
+              </a>
             </div>
           </div>
 
