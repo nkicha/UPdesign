@@ -28,7 +28,11 @@ import {
   Calendar,
   Paperclip,
   Eye,
+  LayoutGrid,
+  Table as TableIcon,
 } from "lucide-react";
+
+type ViewMode = "table" | "cards";
 
 export default function DevisPage() {
   const { token, handleLogout } = useAdminAuth();
@@ -37,6 +41,7 @@ export default function DevisPage() {
   const [devisList, setDevisList] = useState<DevisResponse[]>([]);
   const [loading, setLoading] = useState(false);
   const [devisSearch, setDevisSearch] = useState("");
+  const [viewMode, setViewMode] = useState<ViewMode>("table");
 
   const fetchData = async () => {
     if (!token) return;
@@ -130,6 +135,15 @@ export default function DevisPage() {
     return idx !== -1 ? idx + 1 : 1;
   };
 
+  const statusBadgeClass = (statut: DevisResponse["statut"]) =>
+    statut === "VALIDE"
+      ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/25"
+      : statut === "ANNULE"
+        ? "bg-red-500/10 text-red-400 border border-red-500/25"
+        : statut === "EN_COURS"
+          ? "bg-sky-500/10 text-sky-400 border border-sky-500/25"
+          : "bg-amber-500/10 text-amber-400 border border-amber-500/25";
+
   // Framer Motion Variants
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -145,6 +159,41 @@ export default function DevisPage() {
     hidden: { opacity: 0, y: 15 },
     show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100, damping: 15 } },
   };
+
+  const renderStatusActions = (devis: DevisResponse, size: "sm" | "xs" = "sm") => (
+    <>
+      {devis.statut === "EN_ATTENTE" && (
+        <>
+          <Button
+            size="sm"
+            className="h-8 bg-emerald-500 hover:bg-emerald-600 gap-1.5 text-xs text-white"
+            onClick={() => handleUpdateDevisStatus(devis, "VALIDE")}
+          >
+            <CheckCircle className="h-3.5 w-3.5" />
+            {size === "sm" && "Valider"}
+          </Button>
+          <Button
+            size="sm"
+            className="h-8 bg-red-500 hover:bg-red-600 gap-1.5 text-xs text-white"
+            onClick={() => handleUpdateDevisStatus(devis, "ANNULE")}
+          >
+            <XCircle className="h-3.5 w-3.5" />
+            {size === "sm" && "Annuler"}
+          </Button>
+        </>
+      )}
+      {devis.statut === "VALIDE" && (
+        <Button
+          size="sm"
+          className="h-8 bg-sky-500 hover:bg-sky-600 gap-1.5 text-xs text-white"
+          onClick={() => handleUpdateDevisStatus(devis, "EN_COURS")}
+        >
+          <Play className="h-3.5 w-3.5" />
+          {size === "sm" && "Lancer"}
+        </Button>
+      )}
+    </>
+  );
 
   return (
     <>
@@ -169,7 +218,7 @@ export default function DevisPage() {
       </div>
 
       <div className="space-y-6">
-        {/* ── Search bar ──────────────────────────────────────────────────── */}
+        {/* ── Search bar + view toggle ───────────────────────────────────── */}
         <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-card/20 p-4 rounded-xl border border-white/5">
           <div className="relative w-full sm:w-80">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -180,14 +229,43 @@ export default function DevisPage() {
               onChange={(e) => setDevisSearch(e.target.value)}
             />
           </div>
-          <div className="text-xs text-muted-foreground">
-            Affichage de {filteredDevis.length} devis sur {devisList.length} au total.
+
+          <div className="flex items-center gap-4">
+            <div className="text-xs text-muted-foreground whitespace-nowrap">
+              Affichage de {filteredDevis.length} devis sur {devisList.length} au total.
+            </div>
+
+            {/* View toggle */}
+            <div className="flex items-center rounded-lg border border-white/10 bg-background/50 p-0.5">
+              <button
+                type="button"
+                onClick={() => setViewMode("table")}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${viewMode === "table"
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                  }`}
+              >
+                <TableIcon className="h-3.5 w-3.5" />
+                Tableau
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("cards")}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${viewMode === "cards"
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                  }`}
+              >
+                <LayoutGrid className="h-3.5 w-3.5" />
+                Cartes
+              </button>
+            </div>
           </div>
         </div>
 
         {/* ── List ────────────────────────────────────────────────────────── */}
         {loading && devisList.length === 0 ? (
-          <DevisListSkeleton />
+          viewMode === "table" ? <DevisTableSkeleton /> : <DevisListSkeleton />
         ) : filteredDevis.length === 0 ? (
           <div className="text-center py-16 border-2 border-dashed border-white/5 rounded-2xl bg-card/10">
             <FileText className="mx-auto h-12 w-12 text-muted-foreground mb-4 opacity-40" />
@@ -196,7 +274,101 @@ export default function DevisPage() {
               Essayez d'ajuster vos critères de recherche ou soumettez de nouveaux devis.
             </p>
           </div>
+        ) : viewMode === "table" ? (
+          /* ── TABLE VIEW ──────────────────────────────────────────────── */
+          <div className="rounded-xl border border-white/5 bg-card/30 overflow-hidden shadow-md">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-background/40 border-b border-white/5 text-left">
+                    <th className="px-4 py-3 font-semibold text-xs text-muted-foreground uppercase tracking-wide">#</th>
+                    <th className="px-4 py-3 font-semibold text-xs text-muted-foreground uppercase tracking-wide">Client</th>
+                    <th className="px-4 py-3 font-semibold text-xs text-muted-foreground uppercase tracking-wide">Statut</th>
+                    <th className="px-4 py-3 font-semibold text-xs text-muted-foreground uppercase tracking-wide">Type</th>
+                    <th className="px-4 py-3 font-semibold text-xs text-muted-foreground uppercase tracking-wide">Dimensions</th>
+                    <th className="px-4 py-3 font-semibold text-xs text-muted-foreground uppercase tracking-wide">Matière</th>
+                    <th className="px-4 py-3 font-semibold text-xs text-muted-foreground uppercase tracking-wide text-right">Prix</th>
+                    <th className="px-4 py-3 font-semibold text-xs text-muted-foreground uppercase tracking-wide">Date</th>
+                    <th className="px-4 py-3 font-semibold text-xs text-muted-foreground uppercase tracking-wide text-center">Fichier</th>
+                    <th className="px-4 py-3 font-semibold text-xs text-muted-foreground uppercase tracking-wide text-right">Actions</th>
+                  </tr>
+                </thead>
+                <motion.tbody variants={containerVariants} initial="hidden" animate="show">
+                  {filteredDevis.map((devis) => (
+                    <motion.tr
+                      key={devis.id}
+                      variants={itemVariants}
+                      className="border-b border-white/5 last:border-0 hover:bg-white/[0.02] transition-colors"
+                    >
+                      <td className="px-4 py-3">
+                        <span className="text-xs font-mono px-2 py-1 rounded bg-white/5 text-muted-foreground border border-white/5">
+                          #{getDevisNumber(devis.id)}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 font-semibold text-white max-w-[160px] truncate">{devis.clientNom}</td>
+                      <td className="px-4 py-3">
+                        <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full whitespace-nowrap ${statusBadgeClass(devis.statut)}`}>
+                          {devis.statut}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground max-w-[140px] truncate">{devis.typePanneau || "—"}</td>
+                      <td className="px-4 py-3 text-muted-foreground max-w-[140px] truncate">{devis.dimensions || "—"}</td>
+                      <td className="px-4 py-3 text-muted-foreground max-w-[120px] truncate">{devis.matiere || "—"}</td>
+                      <td className="px-4 py-3 text-right font-bold text-primary whitespace-nowrap">
+                        {(devis.prix ?? 0).toLocaleString("fr-FR")} DH
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">
+                        <span className="flex items-center gap-1.5 text-xs">
+                          <Calendar className="h-3 w-3" />
+                          {new Date(devis.dateCreation).toLocaleDateString("fr-FR")}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        {devis.fileUrl ? (
+                          <a
+                            href={devis.fileUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center justify-center h-7 w-7 rounded-md text-primary hover:bg-primary/10 transition-colors"
+                            title="Voir le fichier"
+                          >
+                            <Paperclip className="h-4 w-4" />
+                          </a>
+                        ) : (
+                          <span className="text-muted-foreground/40">—</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <Button
+                            size="icon"
+                            variant="outline"
+                            onClick={() => handleDownloadPdf(devis.id)}
+                            className="h-7 w-7 border-white/10 hover:bg-white/5 text-sky-400 hover:text-sky-300"
+                            title="Télécharger PDF"
+                          >
+                            <Download className="h-3.5 w-3.5" />
+                          </Button>
+                          {renderStatusActions(devis, "xs")}
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-7 w-7 text-red-500 hover:text-red-400 hover:bg-red-500/10"
+                            onClick={() => handleDeleteDevis(devis.id)}
+                            title="Supprimer"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                      </td>
+                    </motion.tr>
+                  ))}
+                </motion.tbody>
+              </table>
+            </div>
+          </div>
         ) : (
+          /* ── CARD VIEW ───────────────────────────────────────────────── */
           <motion.div
             variants={containerVariants}
             initial="hidden"
@@ -217,17 +389,7 @@ export default function DevisPage() {
                         <span className="text-xs font-mono px-2 py-1 rounded bg-white/5 text-muted-foreground border border-white/5">
                           DEVIS #{getDevisNumber(devis.id)}
                         </span>
-                        <span
-                          className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${
-                            devis.statut === "VALIDE"
-                              ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/25"
-                              : devis.statut === "ANNULE"
-                              ? "bg-red-500/10 text-red-400 border border-red-500/25"
-                              : devis.statut === "EN_COURS"
-                              ? "bg-sky-500/10 text-sky-400 border border-sky-500/25"
-                              : "bg-amber-500/10 text-amber-400 border border-amber-500/25"
-                          }`}
-                        >
+                        <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${statusBadgeClass(devis.statut)}`}>
                           {devis.statut}
                         </span>
                       </div>
@@ -319,36 +481,7 @@ export default function DevisPage() {
                       </div>
 
                       <div className="flex items-center gap-2">
-                        {devis.statut === "EN_ATTENTE" && (
-                          <>
-                            <Button
-                              size="sm"
-                              className="h-8 bg-emerald-500 hover:bg-emerald-600 gap-1.5 text-xs text-white"
-                              onClick={() => handleUpdateDevisStatus(devis, "VALIDE")}
-                            >
-                              <CheckCircle className="h-3.5 w-3.5" />
-                              Valider
-                            </Button>
-                            <Button
-                              size="sm"
-                              className="h-8 bg-red-500 hover:bg-red-600 gap-1.5 text-xs text-white"
-                              onClick={() => handleUpdateDevisStatus(devis, "ANNULE")}
-                            >
-                              <XCircle className="h-3.5 w-3.5" />
-                              Annuler
-                            </Button>
-                          </>
-                        )}
-                        {devis.statut === "VALIDE" && (
-                          <Button
-                            size="sm"
-                            className="h-8 bg-sky-500 hover:bg-sky-600 gap-1.5 text-xs text-white"
-                            onClick={() => handleUpdateDevisStatus(devis, "EN_COURS")}
-                          >
-                            <Play className="h-3.5 w-3.5" />
-                            Lancer Production
-                          </Button>
-                        )}
+                        {renderStatusActions(devis, "sm")}
                         <Button
                           size="sm"
                           variant="ghost"
@@ -367,6 +500,37 @@ export default function DevisPage() {
         )}
       </div>
     </>
+  );
+}
+
+function DevisTableSkeleton() {
+  return (
+    <div className="rounded-xl border border-white/5 bg-card/30 overflow-hidden">
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="bg-background/40 border-b border-white/5">
+              {["#", "Client", "Statut", "Type", "Dimensions", "Matière", "Prix", "Date", "Fichier", "Actions"].map((h) => (
+                <th key={h} className="px-4 py-3 text-left">
+                  <Skeleton className="h-3 w-12 bg-white/5" />
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {[...Array(5)].map((_, i) => (
+              <tr key={i} className="border-b border-white/5 last:border-0">
+                {[...Array(10)].map((__, j) => (
+                  <td key={j} className="px-4 py-3">
+                    <Skeleton className="h-4 w-16 bg-white/5" />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
 }
 
