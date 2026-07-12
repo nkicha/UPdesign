@@ -31,7 +31,7 @@ export default function RootLayout({
           })();
         ` }} />
       </head>
-      <body className="font-body antialiased">{children}</body>
+      <body className="font-body antialiased" suppressHydrationWarning>{children}</body>
     </html>
   );
 }

@@ -1,4 +1,15 @@
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+/**
+ * api.ts — Frontend API client
+ *
+ * All requests go to Next.js API Routes (/api/...).
+ * The Next.js routes proxy to PocketBase server-side.
+ *
+ * ID types are `string` (PocketBase uses 15-char string IDs).
+ */
+
+// Points to the Next.js server itself so API routes work in all environments.
+export const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:9002";
 
 export type QuoteRequest = {
   name: string;
@@ -11,7 +22,7 @@ export type QuoteRequest = {
 };
 
 export type ClientResponse = {
-  id: number;
+  id: string;
   nom: string;
   telephone: string;
   email: string;
@@ -29,8 +40,8 @@ export type ClientRequest = {
 };
 
 export type DevisResponse = {
-  id: number;
-  clientId: number;
+  id: string;
+  clientId: string;
   clientNom: string;
   typePanneau: string;
   dimensions?: string;
@@ -43,7 +54,7 @@ export type DevisResponse = {
 };
 
 export type DevisRequest = {
-  clientId: number;
+  clientId: string;
   typePanneau: string;
   dimensions?: string;
   matiere?: string;
@@ -53,8 +64,8 @@ export type DevisRequest = {
 };
 
 export type CommandeResponse = {
-  id: number;
-  clientId: number;
+  id: string;
+  clientId: string;
   clientNom: string;
   typePanneau: string;
   dimensions?: string;
@@ -65,7 +76,7 @@ export type CommandeResponse = {
 };
 
 export type CommandeRequest = {
-  clientId: number;
+  clientId: string;
   typePanneau: string;
   dimensions?: string;
   matiere?: string;
@@ -113,14 +124,19 @@ async function apiFetch(endpoint: string, options: RequestInit = {}) {
   return response.json();
 }
 
-export async function login(username: string, password: string): Promise<{ accessToken: string }> {
+export async function login(
+  username: string,
+  password: string
+): Promise<{ accessToken: string }> {
   return apiFetch("/api/auth/login", {
     method: "POST",
     body: JSON.stringify({ username, password }),
   });
 }
 
-export async function submitQuoteRequest(formData: FormData): Promise<DevisResponse> {
+export async function submitQuoteRequest(
+  formData: FormData
+): Promise<DevisResponse> {
   const url = `${API_BASE_URL}/api/devis/public`;
   const response = await fetch(url, {
     method: "POST",
@@ -149,7 +165,10 @@ export async function getDevis(token: string): Promise<DevisResponse[]> {
   });
 }
 
-export async function createDevis(token: string, request: DevisRequest): Promise<DevisResponse> {
+export async function createDevis(
+  token: string,
+  request: DevisRequest
+): Promise<DevisResponse> {
   return apiFetch("/api/devis", {
     method: "POST",
     headers: { Authorization: `Bearer ${token}` },
@@ -157,7 +176,11 @@ export async function createDevis(token: string, request: DevisRequest): Promise
   });
 }
 
-export async function updateDevis(id: number, token: string, request: DevisRequest): Promise<DevisResponse> {
+export async function updateDevis(
+  id: string,
+  token: string,
+  request: DevisRequest
+): Promise<DevisResponse> {
   return apiFetch(`/api/devis/${id}`, {
     method: "PUT",
     headers: { Authorization: `Bearer ${token}` },
@@ -165,14 +188,17 @@ export async function updateDevis(id: number, token: string, request: DevisReque
   });
 }
 
-export async function deleteDevis(id: number, token: string): Promise<void> {
+export async function deleteDevis(id: string, token: string): Promise<void> {
   return apiFetch(`/api/devis/${id}`, {
     method: "DELETE",
     headers: { Authorization: `Bearer ${token}` },
   });
 }
 
-export async function getClients(token: string, search?: string): Promise<ClientResponse[]> {
+export async function getClients(
+  token: string,
+  search?: string
+): Promise<ClientResponse[]> {
   const query = search ? `?search=${encodeURIComponent(search)}` : "";
   return apiFetch(`/api/clients${query}`, {
     method: "GET",
@@ -180,7 +206,10 @@ export async function getClients(token: string, search?: string): Promise<Client
   });
 }
 
-export async function createClient(token: string, request: ClientRequest): Promise<ClientResponse> {
+export async function createClient(
+  token: string,
+  request: ClientRequest
+): Promise<ClientResponse> {
   return apiFetch("/api/clients", {
     method: "POST",
     headers: { Authorization: `Bearer ${token}` },
@@ -188,7 +217,11 @@ export async function createClient(token: string, request: ClientRequest): Promi
   });
 }
 
-export async function updateClient(id: number, token: string, request: ClientRequest): Promise<ClientResponse> {
+export async function updateClient(
+  id: string,
+  token: string,
+  request: ClientRequest
+): Promise<ClientResponse> {
   return apiFetch(`/api/clients/${id}`, {
     method: "PUT",
     headers: { Authorization: `Bearer ${token}` },
@@ -196,21 +229,26 @@ export async function updateClient(id: number, token: string, request: ClientReq
   });
 }
 
-export async function deleteClient(id: number, token: string): Promise<void> {
+export async function deleteClient(id: string, token: string): Promise<void> {
   return apiFetch(`/api/clients/${id}`, {
     method: "DELETE",
     headers: { Authorization: `Bearer ${token}` },
   });
 }
 
-export async function getCommandes(token: string): Promise<CommandeResponse[]> {
+export async function getCommandes(
+  token: string
+): Promise<CommandeResponse[]> {
   return apiFetch("/api/commandes", {
     method: "GET",
     headers: { Authorization: `Bearer ${token}` },
   });
 }
 
-export async function createCommande(token: string, request: CommandeRequest): Promise<CommandeResponse> {
+export async function createCommande(
+  token: string,
+  request: CommandeRequest
+): Promise<CommandeResponse> {
   return apiFetch("/api/commandes", {
     method: "POST",
     headers: { Authorization: `Bearer ${token}` },
@@ -218,7 +256,11 @@ export async function createCommande(token: string, request: CommandeRequest): P
   });
 }
 
-export async function updateCommande(id: number, token: string, request: CommandeRequest): Promise<CommandeResponse> {
+export async function updateCommande(
+  id: string,
+  token: string,
+  request: CommandeRequest
+): Promise<CommandeResponse> {
   return apiFetch(`/api/commandes/${id}`, {
     method: "PUT",
     headers: { Authorization: `Bearer ${token}` },
@@ -226,14 +268,20 @@ export async function updateCommande(id: number, token: string, request: Command
   });
 }
 
-export async function deleteCommande(id: number, token: string): Promise<void> {
+export async function deleteCommande(
+  id: string,
+  token: string
+): Promise<void> {
   return apiFetch(`/api/commandes/${id}`, {
     method: "DELETE",
     headers: { Authorization: `Bearer ${token}` },
   });
 }
 
-export async function downloadDevisPdf(id: number, token: string): Promise<void> {
+export async function downloadDevisPdf(
+  id: string,
+  token: string
+): Promise<void> {
   const response = await fetch(`${API_BASE_URL}/api/devis/${id}/pdf`, {
     method: "GET",
     headers: {
@@ -249,9 +297,56 @@ export async function downloadDevisPdf(id: number, token: string): Promise<void>
   const url = window.URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `devis-${id}.pdf`;
+  
+  const contentDisposition = response.headers.get("content-disposition");
+  let filename = `devis-${id}.pdf`;
+  if (contentDisposition) {
+    const match = contentDisposition.match(/filename="?([^"]+)"?/);
+    if (match) {
+      filename = match[1];
+    }
+  }
+  a.download = filename;
+  
   document.body.appendChild(a);
   a.click();
   window.URL.revokeObjectURL(url);
   a.remove();
 }
+
+export async function downloadCommandeBl(
+  id: string,
+  token: string
+): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/api/commandes/${id}/pdf`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Erreur lors du téléchargement du BL PDF.");
+  }
+
+  const blob = await response.blob();
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  
+  const contentDisposition = response.headers.get("content-disposition");
+  let filename = `bl-commande-${id}.pdf`;
+  if (contentDisposition) {
+    const match = contentDisposition.match(/filename="?([^"]+)"?/);
+    if (match) {
+      filename = match[1];
+    }
+  }
+  a.download = filename;
+  
+  document.body.appendChild(a);
+  a.click();
+  window.URL.revokeObjectURL(url);
+  a.remove();
+}
+

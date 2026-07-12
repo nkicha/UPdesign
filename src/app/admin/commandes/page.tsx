@@ -7,6 +7,7 @@ import {
   updateCommande,
   deleteCommande,
   getClients,
+  downloadCommandeBl,
   CommandeResponse,
   ClientResponse,
 } from "@/lib/api";
@@ -16,7 +17,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useAdminAuth } from "@/lib/auth";
-import { ShoppingBag, Trash2, Plus, Loader2, Calendar } from "lucide-react";
+import { ShoppingBag, Trash2, Plus, Loader2, Calendar, Download } from "lucide-react";
 
 export default function CommandesPage() {
   const { token, handleLogout } = useAdminAuth();
@@ -66,7 +67,7 @@ export default function CommandesPage() {
     e.preventDefault();
     if (!token) return;
     const reqData = {
-      clientId: Number(commandeForm.clientId),
+      clientId: commandeForm.clientId,
       typePanneau: commandeForm.typePanneau,
       dimensions: commandeForm.dimensions,
       matiere: commandeForm.matiere,
@@ -94,7 +95,7 @@ export default function CommandesPage() {
     }
   };
 
-  const handleDeleteCommande = async (id: number) => {
+  const handleDeleteCommande = async (id: string) => {
     if (!token || !confirm("Êtes-vous sûr de vouloir supprimer cette commande ?")) return;
     try {
       await deleteCommande(id, token);
@@ -105,6 +106,20 @@ export default function CommandesPage() {
         variant: "destructive",
         title: "Erreur de suppression",
         description: error instanceof Error ? error.message : "Impossible de supprimer la commande.",
+      });
+    }
+  };
+
+  const handleDownloadBl = async (id: string) => {
+    if (!token) return;
+    try {
+      toast({ title: "Génération PDF", description: "Veuillez patienter pendant le téléchargement..." });
+      await downloadCommandeBl(id, token);
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erreur PDF",
+        description: error instanceof Error ? error.message : "Impossible de télécharger le BL PDF.",
       });
     }
   };
@@ -120,6 +135,16 @@ export default function CommandesPage() {
       statut: cmd.statut,
     });
     setShowAddCommande(true);
+  };
+
+  // Sort commandes by ID ascending to assign sequential numbers
+  const sortedChronologically = [...commandesList].sort(
+    (a, b) => a.id.localeCompare(b.id)
+  );
+
+  const getCommandeNumber = (id: string) => {
+    const idx = sortedChronologically.findIndex((c) => c.id === id);
+    return idx !== -1 ? idx + 1 : 1;
   };
 
   return (
@@ -286,7 +311,7 @@ export default function CommandesPage() {
                   <div>
                     <div className="flex items-center gap-3">
                       <span className="text-xs font-mono px-2 py-1 rounded bg-white/5 text-muted-foreground border border-white/5">
-                        COMMANDE #{cmd.id}
+                        COMMANDE #{getCommandeNumber(cmd.id)}
                       </span>
                       <span
                         className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${
@@ -335,6 +360,15 @@ export default function CommandesPage() {
                   </div>
 
                   <div className="flex justify-end gap-2 pt-2 border-t border-white/5">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-8 border-white/10 hover:bg-white/5 gap-1.5 text-xs text-sky-400 hover:text-sky-300"
+                      onClick={() => handleDownloadBl(cmd.id)}
+                    >
+                      <Download className="h-3.5 w-3.5" />
+                      BL PDF
+                    </Button>
                     <Button
                       size="sm"
                       variant="outline"

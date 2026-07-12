@@ -86,7 +86,7 @@ export default function ClientsPage() {
     }
   };
 
-  const handleDeleteClient = async (id: number) => {
+  const handleDeleteClient = async (id: string) => {
     if (
       !token ||
       !confirm("Supprimer ce client supprimera également tous ses devis et commandes associés. Continuer ?")

@@ -64,13 +64,13 @@ export default function LoginPage() {
         <CardContent className="pb-8">
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="username">Identifiant</Label>
+              <Label htmlFor="username">Email ou Nom d'utilisateur</Label>
               <div className="relative">
                 <Users className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="username"
                   type="text"
-                  placeholder="Nom d'utilisateur"
+                  placeholder="email@exemple.com ou nom d'utilisateur"
                   className="pl-10 bg-background border-input dark:border-white/10"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}

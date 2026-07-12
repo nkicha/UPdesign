@@ -71,7 +71,7 @@ export default function DevisPage() {
         description: devis.description,
         statut: newStatus,
       });
-      toast({ title: "Statut mis à jour", description: `Le devis #${devis.id} est maintenant ${newStatus}.` });
+      toast({ title: "Statut mis à jour", description: `Le devis #${getDevisNumber(devis.id)} est maintenant ${newStatus}.` });
       fetchData();
     } catch (error) {
       toast({
@@ -82,11 +82,11 @@ export default function DevisPage() {
     }
   };
 
-  const handleDeleteDevis = async (id: number) => {
+  const handleDeleteDevis = async (id: string) => {
     if (!token || !confirm("Êtes-vous sûr de vouloir supprimer ce devis ?")) return;
     try {
       await deleteDevis(id, token);
-      toast({ title: "Devis supprimé", description: `Le devis #${id} a été supprimé.` });
+      toast({ title: "Devis supprimé", description: `Le devis #${getDevisNumber(id)} a été supprimé.` });
       fetchData();
     } catch (error) {
       toast({
@@ -97,7 +97,7 @@ export default function DevisPage() {
     }
   };
 
-  const handleDownloadPdf = async (id: number) => {
+  const handleDownloadPdf = async (id: string) => {
     if (!token) return;
     try {
       toast({ title: "Génération PDF", description: "Veuillez patienter pendant le téléchargement..." });
@@ -117,6 +117,16 @@ export default function DevisPage() {
       d.typePanneau.toLowerCase().includes(devisSearch.toLowerCase()) ||
       (d.description && d.description.toLowerCase().includes(devisSearch.toLowerCase()))
   );
+
+  // Sort devis by ID ascending to assign sequential numbers
+  const sortedChronologically = [...devisList].sort(
+    (a, b) => a.id.localeCompare(b.id)
+  );
+
+  const getDevisNumber = (id: string) => {
+    const idx = sortedChronologically.findIndex((d) => d.id === id);
+    return idx !== -1 ? idx + 1 : 1;
+  };
 
   return (
     <>
@@ -174,7 +184,7 @@ export default function DevisPage() {
                   <div>
                     <div className="flex items-center gap-3">
                       <span className="text-xs font-mono px-2 py-1 rounded bg-white/5 text-muted-foreground border border-white/5">
-                        DEVIS #{devis.id}
+                        DEVIS #{getDevisNumber(devis.id)}
                       </span>
                       <span
                         className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${
@@ -237,7 +247,7 @@ export default function DevisPage() {
                           Fichier de référence (logo, plan, façade)
                         </span>
                         <a
-                          href={`${API_BASE_URL}${devis.fileUrl}`}
+                          href={devis.fileUrl}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-sm font-semibold text-primary hover:underline hover:text-primary/80 transition-colors truncate flex items-center gap-1 mt-0.5"
@@ -248,13 +258,13 @@ export default function DevisPage() {
                       </div>
                       {/\.(jpg|jpeg|png|gif|webp)$/i.test(devis.fileUrl) && (
                         <a
-                          href={`${API_BASE_URL}${devis.fileUrl}`}
+                          href={devis.fileUrl}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="shrink-0"
                         >
                           <img
-                            src={`${API_BASE_URL}${devis.fileUrl}`}
+                            src={devis.fileUrl}
                             alt="Aperçu"
                             className="h-12 w-12 object-cover rounded border border-border dark:border-white/10 hover:opacity-80 transition-all shadow-md"
                           />

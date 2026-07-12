@@ -5,6 +5,16 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { login as apiLogin } from "./api";
 
+// Global state to synchronize token across all hook instances
+let globalToken: string | null = null;
+let globalIsLoading = true;
+const listeners = new Set<(token: string | null) => void>();
+
+if (typeof window !== "undefined") {
+  globalToken = localStorage.getItem("admin_token");
+  globalIsLoading = false;
+}
+
 export function useAdminAuth() {
   const [token, setTokenState] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -12,20 +22,31 @@ export function useAdminAuth() {
   const { toast } = useToast();
 
   useEffect(() => {
-    const savedToken = localStorage.getItem("admin_token");
-    if (savedToken) {
-      setTokenState(savedToken);
-    }
-    setIsLoading(false);
+    // Sync with global state on mount
+    setTokenState(globalToken);
+    setIsLoading(globalIsLoading);
+
+    const onChange = (newToken: string | null) => {
+      setTokenState(newToken);
+      setIsLoading(false);
+    };
+
+    listeners.add(onChange);
+    return () => {
+      listeners.delete(onChange);
+    };
   }, []);
 
   const setToken = useCallback((newToken: string | null) => {
+    globalToken = newToken;
+    globalIsLoading = false;
     if (newToken) {
       localStorage.setItem("admin_token", newToken);
     } else {
       localStorage.removeItem("admin_token");
     }
-    setTokenState(newToken);
+    // Notify all active listeners
+    listeners.forEach((listener) => listener(newToken));
   }, []);
 
   const handleLogout = useCallback(() => {
