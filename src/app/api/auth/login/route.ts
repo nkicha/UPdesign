@@ -22,10 +22,18 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ accessToken: token });
   } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Identifiants invalides.";
     const pbErr = err as { status?: number };
-    const status = pbErr?.status ?? 401;
+    const status = message.includes("NEXT_PUBLIC_POCKETBASE_URL")
+      ? 500
+      : pbErr?.status ?? 401;
     return NextResponse.json(
-      { message: "Identifiants invalides." },
+      {
+        message:
+          status === 500
+            ? "Configuration PocketBase manquante sur l'environnement Vercel."
+            : "Identifiants invalides.",
+      },
       { status }
     );
   }

@@ -7,9 +7,8 @@
  * ID types are `string` (PocketBase uses 15-char string IDs).
  */
 
-// Points to the Next.js server itself so API routes work in all environments.
-export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:9002";
+// Default to same-origin so deployed clients use the current site automatically.
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 
 export type QuoteRequest = {
   name: string;

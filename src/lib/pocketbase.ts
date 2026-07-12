@@ -7,6 +7,9 @@ const PB_URL = process.env.NEXT_PUBLIC_POCKETBASE_URL;
  * Do NOT import this in Client Components.
  */
 export function getPocketBase(): PocketBase {
+  if (!PB_URL) {
+    throw new Error("NEXT_PUBLIC_POCKETBASE_URL is not configured.");
+  }
   return new PocketBase(PB_URL);
 }
 
