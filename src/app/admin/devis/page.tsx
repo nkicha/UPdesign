@@ -1,0 +1,329 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import {
+  getDevis,
+  updateDevis,
+  deleteDevis,
+  downloadDevisPdf,
+  DevisResponse,
+  API_BASE_URL,
+} from "@/lib/api";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
+import { useAdminAuth } from "@/lib/auth";
+import {
+  FileText,
+  Search,
+  Trash2,
+  CheckCircle,
+  XCircle,
+  Play,
+  Download,
+  Loader2,
+  Calendar,
+  Paperclip,
+  Eye,
+} from "lucide-react";
+
+export default function DevisPage() {
+  const { token, handleLogout } = useAdminAuth();
+  const { toast } = useToast();
+
+  const [devisList, setDevisList] = useState<DevisResponse[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [devisSearch, setDevisSearch] = useState("");
+
+  const fetchData = async () => {
+    if (!token) return;
+    setLoading(true);
+    try {
+      const devis = await getDevis(token);
+      setDevisList(devis);
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erreur de chargement",
+        description: error instanceof Error ? error.message : "Impossible de récupérer les données.",
+      });
+      if (error instanceof Error && error.message.includes("401")) handleLogout();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
+
+  const handleUpdateDevisStatus = async (devis: DevisResponse, newStatus: DevisResponse["statut"]) => {
+    if (!token) return;
+    try {
+      await updateDevis(devis.id, token, {
+        clientId: devis.clientId,
+        typePanneau: devis.typePanneau,
+        dimensions: devis.dimensions,
+        matiere: devis.matiere,
+        prix: devis.prix,
+        description: devis.description,
+        statut: newStatus,
+      });
+      toast({ title: "Statut mis à jour", description: `Le devis #${devis.id} est maintenant ${newStatus}.` });
+      fetchData();
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erreur de mise à jour",
+        description: error instanceof Error ? error.message : "Impossible de modifier le devis.",
+      });
+    }
+  };
+
+  const handleDeleteDevis = async (id: number) => {
+    if (!token || !confirm("Êtes-vous sûr de vouloir supprimer ce devis ?")) return;
+    try {
+      await deleteDevis(id, token);
+      toast({ title: "Devis supprimé", description: `Le devis #${id} a été supprimé.` });
+      fetchData();
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erreur de suppression",
+        description: error instanceof Error ? error.message : "Impossible de supprimer le devis.",
+      });
+    }
+  };
+
+  const handleDownloadPdf = async (id: number) => {
+    if (!token) return;
+    try {
+      toast({ title: "Génération PDF", description: "Veuillez patienter pendant le téléchargement..." });
+      await downloadDevisPdf(id, token);
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erreur PDF",
+        description: error instanceof Error ? error.message : "Impossible de télécharger le PDF.",
+      });
+    }
+  };
+
+  const filteredDevis = devisList.filter(
+    (d) =>
+      d.clientNom.toLowerCase().includes(devisSearch.toLowerCase()) ||
+      d.typePanneau.toLowerCase().includes(devisSearch.toLowerCase()) ||
+      (d.description && d.description.toLowerCase().includes(devisSearch.toLowerCase()))
+  );
+
+  return (
+    <>
+      {/* ── Page Header ─────────────────────────────────────────────────── */}
+      <div className="flex justify-between items-center mb-8 pb-4 border-b border-border dark:border-white/5">
+        <div>
+          <h1 className="text-3xl font-bold font-headline">Devis</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Gérez les demandes de devis et suivez l'activité commerciale en temps réel.
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          {loading && <Loader2 className="h-5 w-5 animate-spin text-primary" />}
+          <Button
+            onClick={fetchData}
+            variant="outline"
+            className="border-border dark:border-white/10 bg-transparent hover:bg-secondary dark:hover:bg-white/5 text-foreground dark:text-muted-foreground hover:text-primary transition-colors duration-300 text-xs h-9"
+          >
+            Actualiser
+          </Button>
+        </div>
+      </div>
+
+      <div className="space-y-6">
+        {/* ── Search bar ──────────────────────────────────────────────────── */}
+        <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-card/20 p-4 rounded-xl border border-white/5">
+          <div className="relative w-full sm:w-80">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Rechercher un devis..."
+              className="pl-10 bg-background/50 border-white/10"
+              value={devisSearch}
+              onChange={(e) => setDevisSearch(e.target.value)}
+            />
+          </div>
+          <div className="text-xs text-muted-foreground">
+            Affichage de {filteredDevis.length} devis sur {devisList.length} au total.
+          </div>
+        </div>
+
+        {/* ── List ────────────────────────────────────────────────────────── */}
+        {filteredDevis.length === 0 ? (
+          <div className="text-center py-16 border-2 border-dashed border-white/5 rounded-2xl bg-card/10">
+            <FileText className="mx-auto h-12 w-12 text-muted-foreground mb-4 opacity-40" />
+            <h3 className="text-lg font-bold">Aucun devis trouvé</h3>
+            <p className="text-sm text-muted-foreground mt-1">
+              Essayez d'ajuster vos critères de recherche ou soumettez de nouveaux devis.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-6">
+            {filteredDevis.map((devis) => (
+              <Card key={devis.id} className="bg-card/30 border-white/5 hover:border-white/10 transition-colors">
+                <CardHeader className="pb-3 flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+                  <div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs font-mono px-2 py-1 rounded bg-white/5 text-muted-foreground border border-white/5">
+                        DEVIS #{devis.id}
+                      </span>
+                      <span
+                        className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${
+                          devis.statut === "VALIDE"
+                            ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/25"
+                            : devis.statut === "ANNULE"
+                            ? "bg-red-500/10 text-red-400 border border-red-500/25"
+                            : devis.statut === "EN_COURS"
+                            ? "bg-sky-500/10 text-sky-400 border border-sky-500/25"
+                            : "bg-amber-500/10 text-amber-400 border border-amber-500/25"
+                        }`}
+                      >
+                        {devis.statut}
+                      </span>
+                    </div>
+                    <CardTitle className="text-xl font-bold mt-2 font-headline">{devis.clientNom}</CardTitle>
+                  </div>
+
+                  <div className="text-right">
+                    <div className="text-2xl font-black text-primary">
+                      {(devis.prix ?? 0).toLocaleString("fr-FR")} DH
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1.5 justify-end">
+                      <Calendar className="h-3 w-3" />
+                      {new Date(devis.dateCreation).toLocaleDateString("fr-FR")}
+                    </div>
+                  </div>
+                </CardHeader>
+
+                <CardContent className="space-y-4">
+                  {/* Technical specs */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-background/30 p-3 rounded-lg border border-white/5 text-sm">
+                    <div>
+                      <span className="text-xs text-muted-foreground block">Type Enseigne</span>
+                      <span className="font-semibold text-white">{devis.typePanneau || "Non spécifié"}</span>
+                    </div>
+                    <div>
+                      <span className="text-xs text-muted-foreground block">Dimensions / Délai</span>
+                      <span className="font-semibold text-white">{devis.dimensions || "Non spécifiées"}</span>
+                    </div>
+                    <div>
+                      <span className="text-xs text-muted-foreground block">Matières</span>
+                      <span className="font-semibold text-white">{devis.matiere || "Non spécifiée"}</span>
+                    </div>
+                  </div>
+
+                  {/* Description */}
+                  {devis.description && (
+                    <div className="text-sm text-muted-foreground bg-background/10 p-3 rounded border border-white/5 whitespace-pre-line">
+                      {devis.description}
+                    </div>
+                  )}
+
+                  {/* Attached file */}
+                  {devis.fileUrl && (
+                    <div className="flex items-center gap-4 p-3 bg-secondary/5 border border-border dark:border-white/5 rounded-lg text-sm transition-all">
+                      <Paperclip className="h-5 w-5 text-primary shrink-0 animate-pulse-slow" />
+                      <div className="flex-1 min-w-0">
+                        <span className="text-xs text-muted-foreground block">
+                          Fichier de référence (logo, plan, façade)
+                        </span>
+                        <a
+                          href={`${API_BASE_URL}${devis.fileUrl}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm font-semibold text-primary hover:underline hover:text-primary/80 transition-colors truncate flex items-center gap-1 mt-0.5"
+                        >
+                          <Eye className="h-3.5 w-3.5" />
+                          Visualiser / Télécharger le document
+                        </a>
+                      </div>
+                      {/\.(jpg|jpeg|png|gif|webp)$/i.test(devis.fileUrl) && (
+                        <a
+                          href={`${API_BASE_URL}${devis.fileUrl}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="shrink-0"
+                        >
+                          <img
+                            src={`${API_BASE_URL}${devis.fileUrl}`}
+                            alt="Aperçu"
+                            className="h-12 w-12 object-cover rounded border border-border dark:border-white/10 hover:opacity-80 transition-all shadow-md"
+                          />
+                        </a>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Actions */}
+                  <div className="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-white/5">
+                    <div className="flex items-center gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleDownloadPdf(devis.id)}
+                        className="h-8 border-white/10 hover:bg-white/5 gap-1.5 text-xs text-sky-400 hover:text-sky-300"
+                      >
+                        <Download className="h-3.5 w-3.5" />
+                        Télécharger PDF
+                      </Button>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      {devis.statut === "EN_ATTENTE" && (
+                        <>
+                          <Button
+                            size="sm"
+                            className="h-8 bg-emerald-500 hover:bg-emerald-600 gap-1.5 text-xs text-white"
+                            onClick={() => handleUpdateDevisStatus(devis, "VALIDE")}
+                          >
+                            <CheckCircle className="h-3.5 w-3.5" />
+                            Valider
+                          </Button>
+                          <Button
+                            size="sm"
+                            className="h-8 bg-red-500 hover:bg-red-600 gap-1.5 text-xs text-white"
+                            onClick={() => handleUpdateDevisStatus(devis, "ANNULE")}
+                          >
+                            <XCircle className="h-3.5 w-3.5" />
+                            Annuler
+                          </Button>
+                        </>
+                      )}
+                      {devis.statut === "VALIDE" && (
+                        <Button
+                          size="sm"
+                          className="h-8 bg-sky-500 hover:bg-sky-600 gap-1.5 text-xs text-white"
+                          onClick={() => handleUpdateDevisStatus(devis, "EN_COURS")}
+                        >
+                          <Play className="h-3.5 w-3.5" />
+                          Lancer Production
+                        </Button>
+                      )}
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-8 text-red-500 hover:text-red-400 hover:bg-red-500/10"
+                        onClick={() => handleDeleteDevis(devis.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
